@@ -119,12 +119,18 @@
 
     <Property Id="OFFICEREGKEYS" Value="12.0,14.0,15.0" /> <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013-->
     <Property Id="XLL32" Value="mysample-AddIn-packed.xll" />
-    <Property Id="XLL64" Value="mysample-AddIn-packed.xll" />
+    <?define XLL32="mysample-AddIn-packed.xll"?>
+    <?define XLL64="mysample-AddIn64-packed.xll"?>
+    <Property Id="XLL64" Value="mysample-AddIn64-packed.xll" />
+    <Property Id="CADLLNAME" Value="mySampleWiXSetupCA.CA.dll" />
+    <?define CADLLNAME="mySampleWiXSetupCA.CA.dll"?>
     
     <!-- Custom Actions -->
-    <Binary Id="_BinID_CustomAction" SourceFile="$(var.mySampleWiXSetupCA.TargetDir)$(var.mySampleWiXSetupCA.TargetName).CA.dll" />
+    <Binary Id="_BinID_CustomAction" SourceFile="$(var.mySampleWiXSetupCA.TargetDir)$(var.CADLLNAME)" />
     <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
-    <CustomAction Id="Action_RegisterAddIn" BinaryKey="InstallerCA.CA.dll" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
+    <CustomAction Id="Action_RegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
+    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
+    <CustomAction Id="Action_UnRegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" />
     
     <!-- Install Sequence -->
     <InstallExecuteSequence>
@@ -145,9 +151,9 @@
 
       <!-- Files to copy in Program Files-->
       <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="{8c78e5d4-a743-4375-9b14-6190c333336a}">
-        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)[XLL32]" />
+        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)$(var.XLL32)" />
         <?if $(var.ProcessorArchitecture) = x64 ?>
-        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)[XLL64]" />
+        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)$(var.XLL64)" />
         <?endif?>
 
         <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >
