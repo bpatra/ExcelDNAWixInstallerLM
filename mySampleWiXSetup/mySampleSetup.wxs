@@ -47,7 +47,7 @@
     <UIRef Id="WixUI_ErrorProgressText" />
 
     <!-- WixUILicenseRtf: License file. -->
-    <WixVariable Id="WixUILicenseRtf" Value="Resources\mySample_License.rtf" />
+    <WixVariable Id="WixUILicenseRtf" Value="Resources\product_License.rtf" />
     <!-- WixUIBannerBmp: 493 by 58 pixels, this bitmap will appear at the top of all but the first page of the installer. -->
     <WixVariable Id="WixUIBannerBmp" Value="Resources\companySetupBanner.bmp" />
     <!-- WixUIDialogBmp: 493 by 312 pixels, this bitmap will appear on the first page of the installer. -->
@@ -111,7 +111,7 @@
     </Condition>
     
     <!-- Custom Actions -->
-    <Binary Id="_BinID_CustomAction" SourceFile="$(var.mySampleWiXSetupCA.TargetDir)$(var.CADLLNAME)" />
+    <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
     <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64)" />
     <CustomAction Id="Action_RegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
     <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64)" />
@@ -135,9 +135,9 @@
     <ComponentGroup Id="_ComponentGpID_MySample" >
       <!-- Files to copy in Program Files-->
       <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUPGUID)">
-        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)$(var.XLL32)" />
+        <File Id="_FileId_Addin32" Source="$(var.XLLFULLPATH32)" />
         <?if $(var.ProcessorArchitecture) = x64 ?>
-        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)$(var.XLL64)" />
+        <File Id="_FileId_Addin64" Source="$(var.XLLFULLPATH64)" />
         <?endif?>
 
         <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >

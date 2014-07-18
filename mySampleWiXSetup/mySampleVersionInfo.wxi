@@ -10,16 +10,25 @@
   <?define PRODUCTGUID="4b860165-3f7e-4f7a-863b-e07bbf492dc9"?>
   <?define COMPONENTGROUPGUID="{667290b6-f50e-45f4-9614-54d363f8b5c6}"?>
 
-  <!--Se the name of your dlls here-->
+  <!--Set the name of your dlls here-->
   <?define XLL32="mysample-AddIn-packed.xll"?>
   <?define XLL64="mysample-AddIn64-packed.xll"?>
-  <?define CADLLNAME="mySampleWiXSetupCA.CA.dll"?>
-
+ 
+  <!--mysample here corresponds to the name of the C# project building the xll-->
+  <?define XLLFULLPATH32="$(var.mysample.TargetDir)$(var.XLL32)"?>
+  <?define XLLFULLPATH64="$(var.mysample.TargetDir)$(var.XLL64)"?>
+  
+  <!--mySampleWiXSetupCA is the name of the project containing the custom actions-->
+  <?define CADLLFULLPATH="(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
+  
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
     For further versions of excel you'll have to update the installation path check (see condition "Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH" in .wxs project) 
   -->
   <?define OFFICEREGKEYS="12.0,14.0,15.0"?>
   
+  <!--That is yours to complete-->
   <?define PRODUCT_NAME="MySample" ?>
   <?define COMPANY_NAME="SampleCompany"?>
+  
+  
 </Include>
