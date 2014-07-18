@@ -117,15 +117,27 @@
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
     </Condition>
 
+    <Property Id="OFFICEREGKEYS" Value="12.0,14.0,15.0" /> <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE-->
+    <Property Id="XLL32" Value="mysample-AddIn-packed.xll" />
+    <Property Id="XLL64" Value="mysample-AddIn-packed.xll" />
+    
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.mySampleWiXSetupCA.TargetDir)$(var.mySampleWiXSetupCA.TargetName).CA.dll" />
-
+    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS];XLL32=[XLL32];XLL64=[XLL64]" />
+    <CustomAction Id="Action_RegisterAddIn" BinaryKey="InstallerCA.CA.dll" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
+    
     <!-- Install Sequence -->
     <InstallExecuteSequence>
-      <!--<Custom Action="_Action_UnRegisterAddIn" Before='InstallFinalize'/>-->
+      <Custom Action="Action_RegisterAddIn.SetProperty" Before="Action_RegisterAddIn">NOT Installed</Custom>
+      <Custom Action="Action_RegisterAddIn" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="Action_UnRegisterAddIn">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_UnRegisterAddIn" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </InstallExecuteSequence>
     <AdminExecuteSequence>
-      <!--<Custom Action="_Action_UnRegisterAddIn" Before='InstallFinalize'/>-->
+      <Custom Action="Action_RegisterAddIn.SetProperty" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="Action_RegisterAddIn" After="Action_RegisterAddIn.SetProperty">NOT Installed</Custom>
+      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_UnRegisterAddIn" After="Action_UnRegisterAddIn.SetProperty">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </AdminExecuteSequence>
 
     <!-- Create our keys in the Registry -->
@@ -133,9 +145,9 @@
 
       <!-- Files to copy in Program Files-->
       <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="{8c78e5d4-a743-4375-9b14-6190c333336a}">
-        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)mysample-AddIn-packed.xll" />
+        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)[XLL32]" />
         <?if $(var.ProcessorArchitecture) = x64 ?>
-        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)mysample-AddIn64-packed.xll" />
+        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)[XLL64]" />
         <?endif?>
 
         <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >

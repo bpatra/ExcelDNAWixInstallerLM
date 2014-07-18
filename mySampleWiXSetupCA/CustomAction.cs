@@ -1,67 +1,239 @@
-﻿using System;
+﻿using Microsoft.Deployment.WindowsInstaller;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
-using Microsoft.Deployment.WindowsInstaller;
 
 namespace mySampleWiXSetupCA
 {
     public class CustomActions
     {
+        #region Methods
 
-        //private static readonly UIntPtr RegistryArea = Reg.CurrentUser;
-        
-        private const string Office2007VersionKey = @"Software\Microsoft\Office\12.0";
-        private const string Office2010VersionKey = @"Software\Microsoft\Office\14.0";
-        private const string Office2013VersionKey = @"Software\Microsoft\Office\15.0";
-        public static List<string> OfficeVersionsList = new List<string> { Office2007VersionKey, Office2010VersionKey, Office2013VersionKey };
+        #region CaRegisterAddIn
+        [CustomAction]
+        public static ActionResult CaRegisterAddIn(Session session)
+        {
+            string szOfficeRegKeyVersions = string.Empty;
+            string szBaseAddInKey = @"Software\Microsoft\Office\";
+            string szXll32Bit = string.Empty;
+            string szXll64Bit = string.Empty;
+            string szXllToRegister = string.Empty;
+            int nOpenVersion;
+            double nVersion;
+            bool bFoundOffice = false;
+            List<string> lstVersions;
 
+            try
+            {
+                session.Log("Enter try block of CaRegisterAddIn");
+
+                szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
+                szXll32Bit = session["XLL32"];
+                szXll64Bit = session["XLL64"];
+
+                if (szOfficeRegKeyVersions.Length > 0)
+                {
+                    lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
+
+                    foreach (string szOfficeVersionKey in lstVersions)
+                    {
+                        nVersion = double.TryParse(szOfficeVersionKey, out nVersion) ? nVersion : 0;
+
+                        session.Log("Retrieving Registry Information for : " + szBaseAddInKey + szOfficeVersionKey);
+
+                        // get the OPEN keys from the Software\Microsoft\Office\[Version]\Excel\Options key, skip if office version not found.
+                        if (Registry.CurrentUser.OpenSubKey(szBaseAddInKey + szOfficeVersionKey, false) != null)
+                        {
+                            string szKeyName = szBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
+
+                            szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
+
+                            RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
+
+                            if (rkExcelXll != null)
+                            {
+                                string[] szValueNames = rkExcelXll.GetValueNames();
+                                bool bIsOpen = false;
+                                int nMaxOpen = -1;
+
+                                // check every value for OPEN keys
+                                foreach (string szValueName in szValueNames)
+                                {
+                                    // if there are already OPEN keys, determine if our key is installed
+                                    if (szValueName.StartsWith("OPEN"))
+                                    {
+                                        nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion) ? nOpenVersion : 0;
+                                        int nNewOpen = szValueName == "OPEN" ? 0 : nOpenVersion;
+                                        if (nNewOpen > nMaxOpen)
+                                        {
+                                            nMaxOpen = nNewOpen;
+                                        }
+
+                                        // if the key is our key, set the open flag
+                                        if (rkExcelXll.GetValue(szValueName).ToString().Contains(szXllToRegister))
+                                        {
+                                            bIsOpen = true;
+                                        }
+                                    }
+                                }
+
+                                // if adding a new key
+                                if (!bIsOpen)
+                                {
+                                    if (nMaxOpen == -1)
+                                    {
+                                        rkExcelXll.SetValue("OPEN", "/R \"" + szXllToRegister + "\"");
+                                    }
+                                    else
+                                    {
+                                        rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(), "/R \"" + szXllToRegister + "\"");
+                                    }
+                                    rkExcelXll.Close();
+                                }
+                                bFoundOffice = true;
+                            }
+                            else
+                            {
+                                session.Log("Unable to retrieve key for : " + szKeyName);
+                            }
+                        }
+                        else
+                        {
+                            session.Log("Unable to retrieve registry Information for : " + szBaseAddInKey + szOfficeVersionKey);
+                        }
+                    }
+                }
+
+                session.Log("End CaRegisterAddIn");
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                session.Log("CaRegisterAddIn SecurityException" + ex.Message);
+                bFoundOffice = false;
+            }
+            catch (System.UnauthorizedAccessException ex)
+            {
+                session.Log("CaRegisterAddIn UnauthorizedAccessException" + ex.Message);
+                bFoundOffice = false;
+            }
+            catch (Exception ex)
+            {
+                session.Log("CaRegisterAddIn Exception" + ex.Message);
+                bFoundOffice = false;
+            }
+
+            return bFoundOffice ? ActionResult.Success : ActionResult.Failure;
+        }
+        #endregion
+
+        #region CaUnRegisterAddIn
         [CustomAction]
         public static ActionResult CaUnRegisterAddIn(Session session)
         {
-            throw new NotImplementedException();
+            string szOfficeRegKeyVersions = string.Empty;
+            string szBaseAddInKey = @"Software\Microsoft\Office\";
+            string szXll32Bit = string.Empty;
+            string szXll64Bit = string.Empty;
+            string szXllToUnRegister = string.Empty;
+            double nVersion;
+            bool bFoundOffice = false;
+            List<string> lstVersions;
+
+            try
+            {
+                session.Log("Begin CaUnRegisterAddIn");
+
+                szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
+                szXll32Bit = session["XLL32"];
+                szXll64Bit = session["XLL64"];
+
+                if (szOfficeRegKeyVersions.Length > 0)
+                {
+                    lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
+
+                    foreach (string szOfficeVersionKey in lstVersions)
+                    {
+                        nVersion = double.TryParse(szOfficeVersionKey, out nVersion) ? nVersion : 0;
+                        szXllToUnRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
+
+                        // only remove keys where office version is found
+                        if (Registry.CurrentUser.OpenSubKey(szBaseAddInKey + szOfficeVersionKey, false) != null)
+                        {
+                            bFoundOffice = true;
+
+                            string szKeyName = szBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
+
+                            RegistryKey rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true);
+                            if (rkAddInKey != null)
+                            {
+                                string[] szValueNames = rkAddInKey.GetValueNames();
+
+                                foreach (string szValueName in szValueNames)
+                                {
+                                    if (szValueName.StartsWith("OPEN") && rkAddInKey.GetValue(szValueName).ToString().Contains(szXllToUnRegister))
+                                    {
+                                        rkAddInKey.DeleteValue(szValueName);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                session.Log("End CaUnRegisterAddIn");
+            }
+            catch (Exception ex)
+            {
+                session.Log(ex.Message);
+            }
+
+            return bFoundOffice ? ActionResult.Success : ActionResult.Failure;
         }
+        #endregion
 
+     
 
-        //private static ActionResult GetOfficeBitness(Session session, string officeVersionKey, out Reg.BitnessType bitness)
-        //{
-            //bitness = Reg.BitnessType.Wow6432;//By default and always true for Office2007
-            //if (officeVersionKey != Office2007VersionKey)
-            //{
-            //    StringBuilder myBitness;
-            //    var result = Reg.GetRegistryKeyValue(Reg.LocalMachine, Reg.BitnessType.NotApplicable, officeVersionKey + @"\Outlook\", "Bitness", out myBitness);
-            //    session.Log(string.Format("1: Reg.LocalMachine, Reg.BitnessType.NotApplicable, officeVersionKey={0}, bitness={1}, result={2}", officeVersionKey, bitness, result));
+        #region GetAddInName
+        public static string GetAddInName(string szXll32Name, string szXll64Name, string szOfficeVersionKey, double nVersion)
+        {
+            string szXllToRegister = string.Empty;
 
-            //    //Not found, lets try in the 32 bit area
-            //    if (result == Reg.ErrorFileNotFound)
-            //    {
-            //        result = Reg.GetRegistryKeyValue(Reg.LocalMachine, Reg.BitnessType.Wow6432, officeVersionKey + @"\Outlook\", "Bitness", out myBitness);
-            //        session.Log(string.Format("2: Reg.LocalMachine, Reg.BitnessType.Wow6432, officeVersionKey={0}, bitness={1}, result={2}", officeVersionKey, bitness, result));
+            if (nVersion >= 14)
+            {
+                // determine if office is 32-bit or 64-bit
+                RegistryKey rkBitness = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+                if (rkBitness != null)
+                {
+                    object oBitValue = rkBitness.GetValue("Bitness");
+                    if (oBitValue != null)
+                    {
+                        if (oBitValue.ToString() == "x64")
+                        {
+                            szXllToRegister = szXll64Name;
+                        }
+                        else
+                        {
+                            szXllToRegister = szXll32Name;
+                        }
+                    }
+                    else
+                    {
+                        szXllToRegister = szXll32Name;
+                    }
+                }
+            }
+            else
+            {
+                szXllToRegister = szXll32Name;
+            }
 
-            //        //Not found, lets try in the 64 bit area
-            //        if (result == Reg.ErrorFileNotFound)
-            //        {
-            //            result = Reg.GetRegistryKeyValue(Reg.LocalMachine, Reg.BitnessType.Wow6464, officeVersionKey + @"\Outlook\", "Bitness", out myBitness);
-            //            session.Log(string.Format("3: Reg.LocalMachine, Reg.BitnessType.Wow6432, officeVersionKey={0}, bitness={1}, result={2}", officeVersionKey, bitness, result));
+            return szXllToRegister;
+        }
+        #endregion
 
-            //            //Bitness not found, we initialize to x86
-            //            if (result != Reg.ErrorSuccess)
-            //            {
-            //                myBitness = new StringBuilder("x86");
-            //                result = Reg.ErrorSuccess;
-            //                session.Log("Bitness could not be found in LocalMachine registry, fallback to x86 bitness");
-            //            }
-            //        }
-            //    }
-
-            //    if (result != Reg.ErrorSuccess)
-            //        return ActionResult.Failure;
-            //    if (myBitness.ToString() == "x64")
-            //    {
-            //        bitness = RegistryHelpers.BitnessType.Wow6464;
-            //        session.Log("Bitness forced to BitnessType.Wow6464");
-            //    }
-            //}
-            //return ActionResult.Success;
-        //}
+        #endregion
     }
 }
