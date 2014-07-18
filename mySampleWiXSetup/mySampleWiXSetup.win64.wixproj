@@ -6,7 +6,7 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>{69df5e08-b41b-4ca2-a070-6d12e31a04db}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>FrontPMForExcelSetup.win64</OutputName>
+    <OutputName>mySampleExcelSetup.win64</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
@@ -17,7 +17,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
     <DefineConstants>Debug;ProcessorArchitecture=x64</DefineConstants>
     <LinkerAdditionalOptions>-cc "$(OutputPath)\" -reusecab</LinkerAdditionalOptions>
-    <SuppressIces>ICE91</SuppressIces>
+    <SuppressIces>ICE91;ICE61;ICE80</SuppressIces>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
