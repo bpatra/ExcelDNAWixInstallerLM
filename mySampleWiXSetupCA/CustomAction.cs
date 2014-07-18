@@ -25,7 +25,7 @@ namespace mySampleWiXSetupCA
                 string szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
                 string szXll32Bit = session["XLL32"];
                 string szXll64Bit = session["XLL64"];
-                //string installFolder = session["INSTALLFOLDER"];
+                string installFolder = session["INSTALLFOLDER"];
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
@@ -43,8 +43,13 @@ namespace mySampleWiXSetupCA
                             string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
                             string szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
-                            
-
+                            //for a localmachine install the xll's should be in the installFolder
+                            string fullPathToXll = Path.Combine(installFolder, szXllToRegister);
+                            if (!File.Exists(fullPathToXll))
+                            {
+                                //the xll is supposed to be here...
+                                throw new FileNotFoundException("The xll is missing at location",fullPathToXll);
+                            }
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
 
@@ -80,11 +85,11 @@ namespace mySampleWiXSetupCA
                                 {
                                     if (nMaxOpen == -1)
                                     {
-                                        rkExcelXll.SetValue("OPEN", "/R \"" + szXllToRegister + "\"");
+                                        rkExcelXll.SetValue("OPEN", "/R \"" + fullPathToXll + "\"");
                                     }
                                     else
                                     {
-                                        rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(CultureInfo.InvariantCulture), "/R \"" + szXllToRegister + "\"");
+                                        rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(CultureInfo.InvariantCulture), "/R \"" + fullPathToXll + "\"");
                                     }
                                     rkExcelXll.Close();
                                 }
