@@ -19,7 +19,7 @@
   <?define XLLFULLPATH64="$(var.mysample.TargetDir)$(var.XLL64)"?>
   
   <!--mySampleWiXSetupCA is the name of the project containing the custom actions-->
-  <?define CADLLFULLPATH="(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
+  <?define CADLLFULLPATH="$(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
   
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
     For further versions of excel you'll have to update the installation path check (see condition "Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH" in .wxs project) 
@@ -29,6 +29,4 @@
   <!--That is yours to complete-->
   <?define PRODUCT_NAME="MySample" ?>
   <?define COMPANY_NAME="SampleCompany"?>
-  
-  
 </Include>
