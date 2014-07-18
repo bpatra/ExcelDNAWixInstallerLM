@@ -110,31 +110,32 @@
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
     </Condition>
 
-    <!--CREATE properties from constant to transfert to custom action-->
-    <!--I do not know why but passing directly the values throught the constants did not seem to work-->
-    <Property Id="XLL32_PROP" Value="$(var.XLL32)" />
-    <Property Id="XLL64_PROP" Value="$(var.XLL64)" />
-    <Property Id="OFFICEREGKEYS_PROP" Value="$(var.OFFICEREGKEYS)" />
-
+    <Property Id="CREATE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /install $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
+    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /uninstall $(var.OFFICEREGKEYS)" />
+    
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
-    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS_PROP];XLL32=[XLL32_PROP];XLL64=[XLL64_PROP];INSTALLFOLDER=[INSTALLFOLDER]" />
-    <CustomAction Id="Action_RegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
-    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS_PROP];XLL32=[XLL32_PROP];XLL64=[XLL64_PROP];INSTALLFOLDER=[INSTALLFOLDER]" />
-    <CustomAction Id="Action_UnRegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" />
+    
+   
+    <CustomAction Id="Action_SetOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[CREATE_HKCU_OPEN_CMD]"/>
+    <CustomAction Id="Action_RemoveOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[REMOVE_HKCU_OPEN_CMD]"/>
+    
+    <CustomAction Id="Action_ChangeActiveSetup.SetProperty" Return="check" Property="Action_ChangeActiveSetup" Value="INSTALLFOLDER=[INSTALLFOLDER]" />
+    <CustomAction Id="Action_ChangeActiveSetup" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetupUnregister" Return="check" Execute="immediate" />
+    
     
     <!-- Install Sequence -->
     <InstallExecuteSequence>
-      <Custom Action="Action_RegisterAddIn.SetProperty" Before="Action_RegisterAddIn">NOT Installed</Custom>
-      <Custom Action="Action_RegisterAddIn" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="Action_UnRegisterAddIn">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_UnRegisterAddIn" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="Action_ChangeActiveSetup.SetProperty" Before="Action_ChangeActiveSetup">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ChangeActiveSetup" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </InstallExecuteSequence>
     <AdminExecuteSequence>
-      <Custom Action="Action_RegisterAddIn.SetProperty" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_RegisterAddIn" After="Action_RegisterAddIn.SetProperty">NOT Installed</Custom>
-      <Custom Action="Action_UnRegisterAddIn.SetProperty" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_UnRegisterAddIn" After="Action_UnRegisterAddIn.SetProperty">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="Action_ChangeActiveSetup.SetProperty" Before="Action_ChangeActiveSetup">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ChangeActiveSetup" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </AdminExecuteSequence>
 
     <!-- Create our keys in the Registry -->
@@ -159,7 +160,7 @@
       <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
         <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)"  />
         <RegistryKey  Root='HKLM' Key='Software\Microsoft\Active Setup\Installed Components\[ProductName]' >
-          <RegistryValue Action='write' Name='StubPath' Type='string' Value='[INSTALLFOLDER]ActiveSetupCommand.exe /i' />
+          <RegistryValue Action='write' Name='StubPath' Type='string' Value='[CREATE_HKCU_OPEN_CMD]' />
         </RegistryKey>
       </Component>
     </ComponentGroup>
