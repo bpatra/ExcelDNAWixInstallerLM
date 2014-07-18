@@ -87,7 +87,7 @@ namespace mySampleWiXSetupCA
                                     }
                                     else
                                     {
-                                        rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(), "/R \"" + szXllToRegister + "\"");
+                                        rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(CultureInfo.InvariantCulture), "/R \"" + szXllToRegister + "\"");
                                     }
                                     rkExcelXll.Close();
                                 }
