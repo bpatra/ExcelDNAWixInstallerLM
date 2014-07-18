@@ -11,43 +11,40 @@ namespace mySampleWiXSetupCA
 {
     public class CustomActions
     {
+        const string SzBaseAddInKey = @"Software\Microsoft\Office\";
+
         [CustomAction]
         public static ActionResult CaRegisterAddIn(Session session)
         {
-            string szOfficeRegKeyVersions = string.Empty;
-            string szBaseAddInKey = @"Software\Microsoft\Office\";
-            string szXll32Bit = string.Empty;
-            string szXll64Bit = string.Empty;
-            string szXllToRegister = string.Empty;
-            int nOpenVersion;
-            double nVersion;
             bool bFoundOffice = false;
-            List<string> lstVersions;
 
             try
             {
                 session.Log("Enter try block of CaRegisterAddIn");
 
-                szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
-                szXll32Bit = session["XLL32"];
-                szXll64Bit = session["XLL64"];
+                string szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
+                string szXll32Bit = session["XLL32"];
+                string szXll64Bit = session["XLL64"];
+                //string installFolder = session["INSTALLFOLDER"];
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
-                    lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
+                    List<string> lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
 
                     foreach (string szOfficeVersionKey in lstVersions)
                     {
-                        nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
+                        double nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
 
-                        session.Log("Retrieving Registry Information for : " + szBaseAddInKey + szOfficeVersionKey);
+                        session.Log("Retrieving Registry Information for : " + SzBaseAddInKey + szOfficeVersionKey);
 
                         // get the OPEN keys from the Software\Microsoft\Office\[Version]\Excel\Options key, skip if office version not found.
-                        if (Registry.CurrentUser.OpenSubKey(szBaseAddInKey + szOfficeVersionKey, false) != null)
+                        if (Registry.CurrentUser.OpenSubKey(SzBaseAddInKey + szOfficeVersionKey, false) != null)
                         {
-                            string szKeyName = szBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
+                            string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
-                            szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
+                            string szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
+                            
+
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
 
@@ -63,7 +60,7 @@ namespace mySampleWiXSetupCA
                                     // if there are already OPEN keys, determine if our key is installed
                                     if (szValueName.StartsWith("OPEN"))
                                     {
-                                        nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion) ? nOpenVersion : 0;
+                                        int nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion) ? nOpenVersion : 0;
                                         int nNewOpen = szValueName == "OPEN" ? 0 : nOpenVersion;
                                         if (nNewOpen > nMaxOpen)
                                         {
@@ -100,7 +97,7 @@ namespace mySampleWiXSetupCA
                         }
                         else
                         {
-                            session.Log("Unable to retrieve registry Information for : " + szBaseAddInKey + szOfficeVersionKey);
+                            session.Log("Unable to retrieve registry Information for : " + SzBaseAddInKey + szOfficeVersionKey);
                         }
                     }
                 }
@@ -112,7 +109,7 @@ namespace mySampleWiXSetupCA
                 session.Log("CaRegisterAddIn SecurityException" + ex.Message);
                 bFoundOffice = false;
             }
-            catch (System.UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
                 session.Log("CaRegisterAddIn UnauthorizedAccessException" + ex.Message);
                 bFoundOffice = false;
@@ -130,38 +127,32 @@ namespace mySampleWiXSetupCA
         [CustomAction]
         public static ActionResult CaUnRegisterAddIn(Session session)
         {
-            string szOfficeRegKeyVersions = string.Empty;
-            string szBaseAddInKey = @"Software\Microsoft\Office\";
-            string szXll32Bit = string.Empty;
-            string szXll64Bit = string.Empty;
-            string szXllToUnRegister = string.Empty;
-            double nVersion;
             bool bFoundOffice = false;
-            List<string> lstVersions;
 
             try
             {
                 session.Log("Begin CaUnRegisterAddIn");
 
-                szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
-                szXll32Bit = session["XLL32"];
-                szXll64Bit = session["XLL64"];
+               string szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
+               string szXll32Bit = session["XLL32"];
+               string szXll64Bit = session["XLL64"];
+
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
-                    lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
+                    List<string> lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
 
                     foreach (string szOfficeVersionKey in lstVersions)
                     {
-                        nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
-                        szXllToUnRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
+                        double nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
+                        string szXllToUnRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
 
                         // only remove keys where office version is found
-                        if (Registry.CurrentUser.OpenSubKey(szBaseAddInKey + szOfficeVersionKey, false) != null)
+                        if (Registry.CurrentUser.OpenSubKey(SzBaseAddInKey + szOfficeVersionKey, false) != null)
                         {
                             bFoundOffice = true;
 
-                            string szKeyName = szBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
+                            string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
                             RegistryKey rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true);
                             if (rkAddInKey != null)
