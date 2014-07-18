@@ -6,7 +6,6 @@
 
   <?include mySampleVersionInfo.wxi ?>
 
-
   <!-- Id="*" to allow reinstalling and automatically removing previous version-->
   <Product Id="*" Name="$(var.PRODUCT_NAME)" Language="1033" Codepage='1252' Version="$(var.PRODUCTVERSION)" Manufacturer="$(var.COMPANY_NAME)" UpgradeCode="$(var.PRODUCTGUID)">
 

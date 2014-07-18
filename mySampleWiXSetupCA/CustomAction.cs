@@ -11,9 +11,6 @@ namespace mySampleWiXSetupCA
 {
     public class CustomActions
     {
-        #region Methods
-
-        #region CaRegisterAddIn
         [CustomAction]
         public static ActionResult CaRegisterAddIn(Session session)
         {
@@ -128,9 +125,8 @@ namespace mySampleWiXSetupCA
 
             return bFoundOffice ? ActionResult.Success : ActionResult.Failure;
         }
-        #endregion
 
-        #region CaUnRegisterAddIn
+
         [CustomAction]
         public static ActionResult CaUnRegisterAddIn(Session session)
         {
@@ -193,11 +189,10 @@ namespace mySampleWiXSetupCA
 
             return bFoundOffice ? ActionResult.Success : ActionResult.Failure;
         }
-        #endregion
 
-     
 
-        #region GetAddInName
+        //Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
+        //http://stackoverflow.com/questions/2203980/detect-whether-office-2010-is-32bit-or-64bit-via-the-registry
         public static string GetAddInName(string szXll32Name, string szXll64Name, string szOfficeVersionKey, double nVersion)
         {
             string szXllToRegister = string.Empty;
@@ -233,8 +228,6 @@ namespace mySampleWiXSetupCA
 
             return szXllToRegister;
         }
-        #endregion
 
-        #endregion
     }
 }
