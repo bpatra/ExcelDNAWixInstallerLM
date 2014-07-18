@@ -14,19 +14,41 @@ namespace mySampleWiXSetupCA
         [CustomAction]
         public static ActionResult CaActiveSetup_RemoveOpenHKCU(Session session)
         {
-            //     <RegistryKey  Root='HKLM' Key='Software\Microsoft\Active Setup\Installed Components\[ProductName]' >
-            //  <RegistryValue Action='write' Name='StubPath' Type='string' Value='[CREATE_HKCU_OPEN_CMD]' />
-            //</RegistryKey>
-            throw new NotImplementedException();
+            try
+            {
+                string command = session["REMOVE_HKCU_OPEN_CMD"];
+                if (string.IsNullOrEmpty(command))
+                {
+                    throw new ArgumentException("REMOVE_HKCU_OPEN_CMD is empty");
+                }
+                session.Log("ActiveSetup Stubpath is: "+command  );
+            }
+            catch (Exception ex)
+            {
+                session.Log(ex.Message);
+                return ActionResult.Failure;
+            }
+            return ActionResult.Success;
         }
 
         [CustomAction]
         public static ActionResult CaActiveSetup_SetOpenHKCU(Session session)
         {
-            //     <RegistryKey  Root='HKLM' Key='Software\Microsoft\Active Setup\Installed Components\[ProductName]' >
-            //  <RegistryValue Action='write' Name='StubPath' Type='string' Value='[CREATE_HKCU_OPEN_CMD]' />
-            //</RegistryKey>
-            throw new NotImplementedException();
+            try
+            {
+                string command = session["CREATE_HKCU_OPEN_CMD"];
+                if (string.IsNullOrEmpty(command))
+                {
+                    throw new ArgumentException("REMOVE_HKCU_OPEN_CMD is empty");
+                }
+                session.Log("ActiveSetup Stubpath is: " + command);
+            }
+            catch (Exception ex)
+            {
+                session.Log(ex.Message);
+                return ActionResult.Failure;
+            }
+            return ActionResult.Success;
         }
 
     }
