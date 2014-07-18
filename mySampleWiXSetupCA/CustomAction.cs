@@ -45,11 +45,6 @@ namespace mySampleWiXSetupCA
                             string szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
                             //for a localmachine install the xll's should be in the installFolder
                             string fullPathToXll = Path.Combine(installFolder, szXllToRegister);
-                            if (!File.Exists(fullPathToXll))
-                            {
-                                //the xll is supposed to be here...
-                                throw new FileNotFoundException("The xll is missing at location",fullPathToXll);
-                            }
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
                             if (rkExcelXll != null)
