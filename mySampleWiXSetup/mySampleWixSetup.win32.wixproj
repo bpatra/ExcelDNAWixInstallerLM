@@ -56,6 +56,14 @@
     <Content Include="Resources\mySample_License.rtf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ActiveSetupCommand\ActiveSetupCommand.csproj">
+      <Name>ActiveSetupCommand</Name>
+      <Project>{059c99be-43cb-4b0d-8222-282617d239d5}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\mysample.csproj">
       <Name>mysample</Name>
       <Project>{A8721679-D743-408D-BEAA-49CCB78C4F32}</Project>

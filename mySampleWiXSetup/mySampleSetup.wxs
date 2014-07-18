@@ -140,21 +140,28 @@
     <!-- Create our keys in the Registry -->
     <ComponentGroup Id="_ComponentGpID_MySample" >
       <!-- Files to copy in Program Files-->
-      <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUPGUID)">
+      <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_PRGMFILES_GUID)">
         <File Id="_FileId_Addin32" Source="$(var.XLLFULLPATH32)" />
         <?if $(var.ProcessorArchitecture) = x64 ?>
         <File Id="_FileId_Addin64" Source="$(var.XLLFULLPATH64)" />
         <?endif?>
-
+        
         <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >
           <RegistryValue Action='write' Name='InstallPath' Type='string' Value='[INSTALLFOLDER]' />
           <RegistryValue Action='write' Name='ProductVersion' Type='string' Value='[ProductVersion]' />
           <RegistryValue Action='write' Name='ProductName' Type='string' Value='[ProductName]' />
         </RegistryKey>
+
       </Component>
 
-      <!--Install to version of Office -->
-
+      <!--Component for the active setup-->
+      <!--this permanent because we need to keep that after install-->
+      <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
+        <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)"  />
+        <RegistryKey  Root='HKLM' Key='Software\Microsoft\Active Setup\Installed Components\[ProductName]' >
+          <RegistryValue Action='write' Name='StubPath' Type='string' Value='[INSTALLFOLDER]ActiveSetupCommand.exe /i' />
+        </RegistryKey>
+      </Component>
     </ComponentGroup>
   </Product>
 </Wix>

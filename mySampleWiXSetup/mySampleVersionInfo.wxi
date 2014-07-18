@@ -8,8 +8,9 @@
   <!-- THIS GUID MUST BE UNIQUE PER PRODUCT -->
   <!--IF YOU DO NOT CHANGE THE GUIDS THEN YOKO ONO WILL SING TO WAKE YOU UP EVERY MORNING TILL THE END OF YOUR LIFE!-->
   <?define PRODUCTGUID="4b860165-3f7e-4f7a-863b-e07bbf492dc9"?>
-  <?define COMPONENTGROUPGUID="{667290b6-f50e-45f4-9614-54d363f8b5c6}"?>
-
+  <?define COMPONENTGROUP_PRGMFILES_GUID="{667290b6-f50e-45f4-9614-54d363f8b5c6}"?>
+  <?define COMPONENTGROUP_ACTIVESETUP_GUID="{6bf47eef-4f2b-436d-a0b5-b5c1af4ff35d}"?>
+  
   <!--Set the name of your dlls here-->
   <?define XLL32="mysample-AddIn-packed.xll"?>
   <?define XLL64="mysample-AddIn64-packed.xll"?>
@@ -20,6 +21,9 @@
   
   <!--mySampleWiXSetupCA is the name of the project containing the custom actions-->
   <?define CADLLFULLPATH="$(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
+  
+  <!-- the .exe file path that will be executed by the active setup-->
+  <?define ActiveSetupExeFullPath="$(var.ActiveSetupCommand.TargetPath)"?>
   
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
     For further versions of excel you'll have to update the installation path check (see condition "Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH" in .wxs project) 
