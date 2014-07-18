@@ -20,12 +20,12 @@ namespace mySampleWiXSetupCA
             {
                 session.Log("Enter try block of CaRegisterAddIn");
 
-                string szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
-                string szXll32Bit = session["XLL32"];
-                string szXll64Bit = session["XLL64"];
+                string szOfficeRegKeyVersions = session["OFFICEREGKEYS_PROP"];
+                string szXll32Bit = session["XLL32_PROP"];
+                string szXll64Bit = session["XLL64_PROP"];
                 string installFolder = session["INSTALLFOLDER"];
 
-                session.Log(string.Format("szOfficeRegKeyVersions:{0};szXll32Bit:{1};szXll64Bit:{2}",szOfficeRegKeyVersions,szXll32Bit,szXll64Bit));
+                session.Log(string.Format("szOfficeRegKeyVersions:{0};szXll32Bit:{1};szXll64Bit:{2};installFolder:{3}", szOfficeRegKeyVersions, szXll32Bit, szXll64Bit, installFolder));
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
@@ -137,10 +137,12 @@ namespace mySampleWiXSetupCA
             {
                 session.Log("Begin CaUnRegisterAddIn");
 
-               string szOfficeRegKeyVersions = session["OFFICEREGKEYS"];
-               string szXll32Bit = session["XLL32"];
-               string szXll64Bit = session["XLL64"];
+                string szOfficeRegKeyVersions = session["OFFICEREGKEYS_PROP"];
+                string szXll32Bit = session["XLL32_PROP"];
+                string szXll64Bit = session["XLL64_PROP"];
+                string installFolder = session["INSTALLFOLDER"];
 
+                session.Log(string.Format("szOfficeRegKeyVersions:{0};szXll32Bit:{1};szXll64Bit:{2};installFolder:{3}", szOfficeRegKeyVersions, szXll32Bit, szXll64Bit, installFolder));
 
                 if (szOfficeRegKeyVersions.Length > 0)
                 {

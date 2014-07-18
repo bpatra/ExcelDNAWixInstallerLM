@@ -14,7 +14,7 @@
     <MajorUpgrade DowngradeErrorMessage="A newer version of $(var.PRODUCT_NAME) is already installed." AllowSameVersionUpgrades="yes" />
     <Media Id="1" Cabinet="$(var.PRODUCT_NAME)_$(var.ProcessorArchitecture).cab" EmbedCab="yes" />
 
-    <Feature Id="ProductFeature" Title="$(var.PRODUCT_NAME)" Level="1" Description="mySample $(var.ProcessorArchitecture)" ConfigurableDirectory='INSTALLFOLDER'>
+    <Feature Id="ProductFeature" Title="$(var.PRODUCT_NAME)" Level="1" Description="$(var.PRODUCT_NAME) $(var.ProcessorArchitecture)" ConfigurableDirectory='INSTALLFOLDER'>
       <ComponentGroupRef Id="_ComponentGpID_MySample" />
     </Feature>
 
@@ -109,12 +109,18 @@
     <Condition Message="$(var.OfficeExcelNotFoundMessage)">
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
     </Condition>
-    
+
+    <!--CREATE properties from constant to transfert to custom action-->
+    <!--I do not know why but passing directly the values throught the constants did not seem to work-->
+    <Property Id="XLL32_PROP" Value="$(var.XLL32)" />
+    <Property Id="XLL64_PROP" Value="$(var.XLL64)" />
+    <Property Id="OFFICEREGKEYS_PROP" Value="$(var.OFFICEREGKEYS)" />
+
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
-    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64);INSTALLFOLDER=[INSTALLFOLDER]" />
+    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS_PROP];XLL32=[XLL32_PROP];XLL64=[XLL64_PROP];INSTALLFOLDER=[INSTALLFOLDER]" />
     <CustomAction Id="Action_RegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
-    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64);INSTALLFOLDER=[INSTALLFOLDER]" />
+    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=[OFFICEREGKEYS_PROP];XLL32=[XLL32_PROP];XLL64=[XLL64_PROP];INSTALLFOLDER=[INSTALLFOLDER]" />
     <CustomAction Id="Action_UnRegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" />
     
     <!-- Install Sequence -->
