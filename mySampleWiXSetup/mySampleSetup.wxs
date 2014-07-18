@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:ui="http://schemas.microsoft.com/wix/UIExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+
+  <?include mySampleVersionInfo.wxi ?>
+
+  <!-- FOR A NEW PRODUCT ALWAYS CHANGE ALL THE GUIDS. INCLUDING THE ONES FOUND IN THE WixSetup PROJECT ASSEMBLYINFO.CS -->
+  <!-- Use this to Execute the MSI and Log Errors
+  msiexec /i <path>\mySampleWiXSetup\bin\Debug\mySampleExcelSetup.msi /l* log.txt
+  or
+  msiexec /uninstall <path>\mySampleWiXSetup\bin\Debug\mySampleExcelSetup.msi /l* log.txt
+  -->
+
+  <!-- Id="*" to allow reinstalling and automatically removing previous version-->
+  <Product Id="*" Name="MySample" Language="1033" Codepage='1252' Version="$(var.PRODUCTVERSION)" Manufacturer="SampleCompany" UpgradeCode="$(var.PRODUCTGUID)">
+
+    <Package Comments="MySample $(var.ProcessorArchitecture) $(var.PRODUCTVERSION)" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages='1033' SummaryCodepage='1252' Platform="$(var.ProcessorArchitecture)" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
+    <Media Id="1" Cabinet="mySample_$(var.ProcessorArchitecture).cab" EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="MySample" Level="1" Description="mySample $(var.ProcessorArchitecture)" ConfigurableDirectory='INSTALLFOLDER'>
+      <ComponentGroupRef Id="_ComponentGpID_MySample" />
+    </Feature>
+
+    <Property Id="TARGETDIR" Secure="yes" />
+    <Property Id="INSTALLFOLDER" Secure="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <?if $(var.ProcessorArchitecture) = x86 ?>
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="ManufacturerFolder" Name="SampleCompany">
+          <Directory Id="INSTALLFOLDER" Name="MySample">
+          </Directory>
+        </Directory>
+      </Directory>
+      <?elseif $(var.ProcessorArchitecture) = x64 ?>
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="ManufacturerFolder" Name="SampleCompany">
+          <Directory Id="INSTALLFOLDER" Name="MySample">
+          </Directory>
+        </Directory>
+      </Directory>
+      <?endif?>
+    </Directory>
+
+    <!-- UI information-->
+    <Property Id="ARPPRODUCTICON" Value="_FileID_Icon.ico" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="WIXUI_ARPNOMODIFY" Value="yes" Secure="yes" />
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <!-- WixUILicenseRtf: License file. -->
+    <WixVariable Id="WixUILicenseRtf" Value="Resources\mySample_License.rtf" />
+    <!-- WixUIBannerBmp: 493 by 58 pixels, this bitmap will appear at the top of all but the first page of the installer. -->
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\companySetupBanner.bmp" />
+    <!-- WixUIDialogBmp: 493 by 312 pixels, this bitmap will appear on the first page of the installer. -->
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\companySetupDialog.bmp" />
+    <Icon Id="_FileID_Icon.ico" SourceFile="Resources\company.ico"/>
+
+    <!--
+      WS058503: Note about Secure=yes. If installed with UAC enabled, the uninstall process failed to remove files due to not allowed properties.
+      Secure=yes must be used to fixed the issue as describe here: http://www.installsite.org/pages/en/msi/articles/VistaMSI/
+    -->
+
+    <!-- Get bitness of installed office version -->
+    <Property Id="OFFICE2007BITNESS" Value="x86" Secure="yes"/>
+    <!-- No x64 version of 2007 -->
+    <Property Id="OFFICE2010BITNESS" Secure="yes">
+      <?if $(var.ProcessorArchitecture) = x64 ?>
+      <RegistrySearch Id="Office2010Bitness64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Outlook" Name="Bitness" Type="raw" Win64="yes" />
+      <?endif?>
+      <RegistrySearch Id="Office2010Bitness32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Outlook" Name="Bitness" Type="raw" Win64="no" />
+    </Property>
+    <Property Id="OFFICE2013BITNESS" Secure="yes">
+      <?if $(var.ProcessorArchitecture) = x64 ?>
+      <RegistrySearch Id="Office2013Bitness64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Outlook" Name="Bitness" Type="raw"  Win64="yes" />
+      <?endif?>
+      <RegistrySearch Id="Office2013Bitness32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Outlook" Name="Bitness" Type="raw"  Win64="no" />
+    </Property>
+
+    <!-- Get install path of installed office version -->
+    <Property Id="EXCEL2007INSTALLPATH" Secure="yes">
+      <?if $(var.ProcessorArchitecture) = x64 ?>
+      <RegistrySearch Id="OfficeExcel2007InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\12.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
+      <?endif?>
+      <RegistrySearch Id="OfficeExcel2007InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\12.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
+    </Property>
+    <Property Id="EXCEL2010INSTALLPATH" Secure="yes">
+      <?if $(var.ProcessorArchitecture) = x64 ?>
+      <RegistrySearch Id="OfficeExcel2010InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
+      <?endif?>
+      <RegistrySearch Id="OfficeExcel2010InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
+    </Property>
+    <Property Id="EXCEL2013INSTALLPATH" Secure="yes">
+      <?if $(var.ProcessorArchitecture) = x64 ?>
+      <RegistrySearch Id="OfficeExcel2013InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
+      <?endif?>
+      <RegistrySearch Id="OfficeExcel2013InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
+    </Property>
+
+    <PropertyRef Id="NETFRAMEWORK40FULL" />
+    <Condition Message="This setup requires the .NET Framework 4.0 to be installed.">
+      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
+    </Condition>
+    
+    <!-- Detect if at least one office excel has been found -->
+    <?if $(var.ProcessorArchitecture) = x86 ?>
+    <?define OfficeExcelNotFoundMessage=This setup requires Office Excel 2007, 2010 and/or 2013 (32-bit). ?>
+    <?elseif $(var.ProcessorArchitecture) = x64 ?>
+    <?define OfficeExcelNotFoundMessage=This setup requires Office Excel 2007, 2010 and/or 2013 (32-bit or 64-bit). ?>
+    <?endif?>
+    <Condition Message="$(var.OfficeExcelNotFoundMessage)">
+      <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
+    </Condition>
+
+    <!-- Custom Actions -->
+    <Binary Id="_BinID_CustomAction" SourceFile="$(var.mySampleWiXSetupCA.TargetDir)$(var.mySampleWiXSetupCA.TargetName).CA.dll" />
+
+    <!-- Install Sequence -->
+    <InstallExecuteSequence>
+      <!--<Custom Action="_Action_UnRegisterAddIn" Before='InstallFinalize'/>-->
+    </InstallExecuteSequence>
+    <AdminExecuteSequence>
+      <!--<Custom Action="_Action_UnRegisterAddIn" Before='InstallFinalize'/>-->
+    </AdminExecuteSequence>
+
+    <!-- Create our keys in the Registry -->
+    <ComponentGroup Id="_ComponentGpID_MySample" >
+
+      <!-- Files to copy in Program Files-->
+      <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="{8c78e5d4-a743-4375-9b14-6190c333336a}">
+        <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)mysample-AddIn-packed.xll" />
+        <?if $(var.ProcessorArchitecture) = x64 ?>
+        <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)mysample-AddIn64-packed.xll" />
+        <?endif?>
+
+        <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >
+          <RegistryValue Action='write' Name='InstallPath' Type='string' Value='[INSTALLFOLDER]' />
+          <RegistryValue Action='write' Name='ProductVersion' Type='string' Value='[ProductVersion]' />
+          <RegistryValue Action='write' Name='ProductName' Type='string' Value='[ProductName]' />
+        </RegistryKey>
+      </Component>
+
+      <!--Install to version of Office -->
+
+    </ComponentGroup>
+  </Product>
+</Wix>

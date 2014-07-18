@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+
+  <!-- Constants (this property will be updated by msbuild) -->
+  <?define PRODUCTVERSION="10.0.0.0000" ?>
+
+  <!-- Constants -->
+  <!-- THIS GUID MUST BE UNIQUE PER PRODUCT -->
+  <?define PRODUCTGUID="6A9ED229-37E4-4813-ADA0-AA6284D9BC83"?>
+
+</Include>
