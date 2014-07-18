@@ -112,9 +112,9 @@
     
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
-    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64)" />
+    <CustomAction Id="Action_RegisterAddIn.SetProperty" Return="check" Property="Action_RegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64);INSTALLFOLDER=[INSTALLFOLDER]" />
     <CustomAction Id="Action_RegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaRegisterAddIn" Return="check" Execute="immediate"/>
-    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64)" />
+    <CustomAction Id="Action_UnRegisterAddIn.SetProperty" Return="check" Property="Action_UnRegisterAddIn" Value="OFFICEREGKEYS=$(var.OFFICEREGKEYS);XLL32=$(var.XLL32);XLL64=$(var.XLL64);INSTALLFOLDER=[INSTALLFOLDER]" />
     <CustomAction Id="Action_UnRegisterAddIn" BinaryKey="_BinID_CustomAction" DllEntry="CaUnRegisterAddIn" Return="check" Execute="immediate" />
     
     <!-- Install Sequence -->
