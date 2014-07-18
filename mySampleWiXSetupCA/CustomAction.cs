@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,7 @@ namespace mySampleWiXSetupCA
 
                     foreach (string szOfficeVersionKey in lstVersions)
                     {
-                        nVersion = double.TryParse(szOfficeVersionKey, out nVersion) ? nVersion : 0;
+                        nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
 
                         session.Log("Retrieving Registry Information for : " + szBaseAddInKey + szOfficeVersionKey);
 
@@ -156,7 +157,7 @@ namespace mySampleWiXSetupCA
 
                     foreach (string szOfficeVersionKey in lstVersions)
                     {
-                        nVersion = double.TryParse(szOfficeVersionKey, out nVersion) ? nVersion : 0;
+                        nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
                         szXllToUnRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
 
                         // only remove keys where office version is found
