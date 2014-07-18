@@ -8,11 +8,11 @@ using Microsoft.Win32;
 
 namespace ActiveSetupCommand
 {
-    public static class HkcuKeys
+    static class HkcuKeys
     {
         public const string SzBaseAddInKey = @"Software\Microsoft\Office\";
 
-        public static bool CreateOpenHKCUKey(string officeRegKeyVersions, string xll32Name, string xll64Name, string fullPathInstallFolder)
+        public static bool CreateOpenHkcuKey(string officeRegKeyVersions, string xll32Name, string xll64Name, string fullPathInstallFolder)
         {
             bool success = false;
             try
@@ -126,7 +126,7 @@ namespace ActiveSetupCommand
         }
 
 
-        public static bool RemoveHKCUOpenKey(string szOfficeRegKeyVersions, string szXll32Bit, string szXll64Bit)
+        public static bool RemoveHkcuOpenKey(string szOfficeRegKeyVersions, string szXll32Bit, string szXll64Bit)
         {
             bool bFoundOffice = false;
             try
