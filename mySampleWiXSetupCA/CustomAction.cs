@@ -32,6 +32,8 @@ namespace mySampleWiXSetupCA
                 szXll32Bit = session["XLL32"];
                 szXll64Bit = session["XLL64"];
 
+                session.Log(string.Format("szOfficeRegKeyVersions:{0};szXll32Bit:{1};szXll64Bit:{2}",szOfficeRegKeyVersions,szXll32Bit,szXll64Bit));
+
                 if (szOfficeRegKeyVersions.Length > 0)
                 {
                     lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
@@ -50,9 +52,9 @@ namespace mySampleWiXSetupCA
                             szXllToRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
-
                             if (rkExcelXll != null)
                             {
+                                session.Log("Success finding HKCU key for : " + szKeyName);
                                 string[] szValueNames = rkExcelXll.GetValueNames();
                                 bool bIsOpen = false;
                                 int nMaxOpen = -1;
