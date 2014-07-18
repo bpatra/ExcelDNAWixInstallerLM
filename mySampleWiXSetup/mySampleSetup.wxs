@@ -6,22 +6,16 @@
 
   <?include mySampleVersionInfo.wxi ?>
 
-  <!-- FOR A NEW PRODUCT ALWAYS CHANGE ALL THE GUIDS. INCLUDING THE ONES FOUND IN THE WixSetup PROJECT ASSEMBLYINFO.CS -->
-  <!-- Use this to Execute the MSI and Log Errors
-  msiexec /i <path>\mySampleWiXSetup\bin\Debug\mySampleExcelSetup.msi /l* log.txt
-  or
-  msiexec /uninstall <path>\mySampleWiXSetup\bin\Debug\mySampleExcelSetup.msi /l* log.txt
-  -->
 
   <!-- Id="*" to allow reinstalling and automatically removing previous version-->
-  <Product Id="*" Name="MySample" Language="1033" Codepage='1252' Version="$(var.PRODUCTVERSION)" Manufacturer="SampleCompany" UpgradeCode="$(var.PRODUCTGUID)">
+  <Product Id="*" Name="$(var.PRODUCT_NAME)" Language="1033" Codepage='1252' Version="$(var.PRODUCTVERSION)" Manufacturer="$(var.COMPANY_NAME)" UpgradeCode="$(var.PRODUCTGUID)">
 
-    <Package Comments="MySample $(var.ProcessorArchitecture) $(var.PRODUCTVERSION)" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages='1033' SummaryCodepage='1252' Platform="$(var.ProcessorArchitecture)" />
+    <Package Comments="$(var.PRODUCT_NAME) $(var.ProcessorArchitecture) $(var.PRODUCTVERSION)" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages='1033' SummaryCodepage='1252' Platform="$(var.ProcessorArchitecture)" />
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
-    <Media Id="1" Cabinet="mySample_$(var.ProcessorArchitecture).cab" EmbedCab="yes" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of $(var.PRODUCT_NAME) is already installed." AllowSameVersionUpgrades="yes" />
+    <Media Id="1" Cabinet="$(var.PRODUCT_NAME)_$(var.ProcessorArchitecture).cab" EmbedCab="yes" />
 
-    <Feature Id="ProductFeature" Title="MySample" Level="1" Description="mySample $(var.ProcessorArchitecture)" ConfigurableDirectory='INSTALLFOLDER'>
+    <Feature Id="ProductFeature" Title="$(var.PRODUCT_NAME)" Level="1" Description="mySample $(var.ProcessorArchitecture)" ConfigurableDirectory='INSTALLFOLDER'>
       <ComponentGroupRef Id="_ComponentGpID_MySample" />
     </Feature>
 
@@ -31,15 +25,15 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <?if $(var.ProcessorArchitecture) = x86 ?>
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="ManufacturerFolder" Name="SampleCompany">
-          <Directory Id="INSTALLFOLDER" Name="MySample">
+        <Directory Id="ManufacturerFolder" Name="$(var.COMPANY_NAME)">
+          <Directory Id="INSTALLFOLDER" Name="$(var.PRODUCT_NAME)">
           </Directory>
         </Directory>
       </Directory>
       <?elseif $(var.ProcessorArchitecture) = x64 ?>
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="ManufacturerFolder" Name="SampleCompany">
-          <Directory Id="INSTALLFOLDER" Name="MySample">
+        <Directory Id="ManufacturerFolder" Name="$(var.COMPANY_NAME)">
+          <Directory Id="INSTALLFOLDER" Name="$(var.PRODUCT_NAME)">
           </Directory>
         </Directory>
       </Directory>
@@ -140,9 +134,8 @@
 
     <!-- Create our keys in the Registry -->
     <ComponentGroup Id="_ComponentGpID_MySample" >
-
       <!-- Files to copy in Program Files-->
-      <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="{8c78e5d4-a743-4375-9b14-6190c333336a}">
+      <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUPGUID)">
         <File Id="_FileId_Addin32" Source="$(var.mysample.TargetDir)$(var.XLL32)" />
         <?if $(var.ProcessorArchitecture) = x64 ?>
         <File Id="_FileId_Addin64" Source="$(var.mysample.TargetDir)$(var.XLL64)" />

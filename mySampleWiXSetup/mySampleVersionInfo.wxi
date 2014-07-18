@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 
-  <!-- Constants (this property will be updated by msbuild) -->
-  <?define PRODUCTVERSION="10.0.0.0000" ?>
+  <!-- Constants (this property should be updated by the build process) -->
+  <?define PRODUCTVERSION="66.6.6.6666" ?>
 
   <!-- Constants -->
   <!-- THIS GUID MUST BE UNIQUE PER PRODUCT -->
+  <!--IF YOU DO NOT CHANGE THE GUIDS THEN YOKO ONO WILL SING TO WAKE YOU UP EVERY MORNING TILL THE END OF YOUR LIFE!-->
   <?define PRODUCTGUID="4b860165-3f7e-4f7a-863b-e07bbf492dc9"?>
+  <?define COMPONENTGROUPGUID="{667290b6-f50e-45f4-9614-54d363f8b5c6}"?>
 
+  <!--Se the name of your dlls here-->
   <?define XLL32="mysample-AddIn-packed.xll"?>
   <?define XLL64="mysample-AddIn64-packed.xll"?>
   <?define CADLLNAME="mySampleWiXSetupCA.CA.dll"?>
 
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013-->
   <?define OFFICEREGKEYS="12.0,14.0,15.0"?>
+  
+  <?define PRODUCT_NAME="MySample" ?>
+  <?define COMPANY_NAME="SampleCompany"?>
 </Include>
