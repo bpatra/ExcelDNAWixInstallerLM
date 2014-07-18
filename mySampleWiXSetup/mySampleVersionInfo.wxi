@@ -24,7 +24,7 @@
   
   <!-- the .exe file path that will be executed by the active setup-->
   <?define ActiveSetupExeFullPath="$(var.ActiveSetupCommand.TargetPath)"?>
-  <?define ActiveSetupExeName="$(var.TargetName).exe"?>
+  <?define ActiveSetupExeName="$(var.ActiveSetupCommand.TargetName).exe"?>
   
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
     For further versions of excel you'll have to update the installation path check (see condition "Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH" in .wxs project) 
