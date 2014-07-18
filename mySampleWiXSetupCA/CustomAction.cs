@@ -68,6 +68,8 @@ namespace mySampleWiXSetupCA
                                         }
 
                                         // if the key is our key, set the open flag
+                                        //NOTE: this line means if the user has changed its office from 32 to 64 (or conversly) without removing the addin then we will not update the key properly
+                                        //The user will have to uninstall addin before installing it again
                                         if (rkExcelXll.GetValue(szValueName).ToString().Contains(szXllToRegister))
                                         {
                                             bIsOpen = true;
@@ -145,9 +147,6 @@ namespace mySampleWiXSetupCA
 
                     foreach (string szOfficeVersionKey in lstVersions)
                     {
-                        double nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
-                        string szXllToUnRegister = GetAddInName(szXll32Bit, szXll64Bit, szOfficeVersionKey, nVersion);
-
                         // only remove keys where office version is found
                         if (Registry.CurrentUser.OpenSubKey(Constants.SzBaseAddInKey + szOfficeVersionKey, false) != null)
                         {
@@ -162,7 +161,8 @@ namespace mySampleWiXSetupCA
 
                                 foreach (string szValueName in szValueNames)
                                 {
-                                    if (szValueName.StartsWith("OPEN") && rkAddInKey.GetValue(szValueName).ToString().Contains(szXllToUnRegister))
+                                    //unregister both 32 and 64 xll
+                                    if (szValueName.StartsWith("OPEN") && (rkAddInKey.GetValue(szValueName).ToString().Contains(szXll32Bit) || rkAddInKey.GetValue(szValueName).ToString().Contains(szXll64Bit)))
                                     {
                                         rkAddInKey.DeleteValue(szValueName);
                                     }
