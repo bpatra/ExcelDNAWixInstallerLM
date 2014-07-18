@@ -8,7 +8,7 @@ namespace mysample
 {
     using ExcelDna.Integration;
 
-    public static class MyFunctions
+    public static class MyUdfs
     {
         [ExcelFunction(Name="BestFootballClub",Description = "My first .NET function")]
         public static string BestFootballClub(string name)
