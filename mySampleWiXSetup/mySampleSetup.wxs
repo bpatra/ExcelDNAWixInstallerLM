@@ -116,26 +116,36 @@
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
     
-   
+    <!--This two custom actions (call a the .exe) are responsible for set/remove the HKCU key for the current user.-->
     <CustomAction Id="Action_SetOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[CREATE_HKCU_OPEN_CMD]"/>
     <CustomAction Id="Action_RemoveOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[REMOVE_HKCU_OPEN_CMD]"/>
+
+    <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
+    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value="CREATE_HKCU_OPEN_CMD=[CREATE_HKCU_OPEN_CMD]" />
+    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="immediate" />
     
-    <CustomAction Id="Action_ChangeActiveSetup.SetProperty" Return="check" Property="Action_ChangeActiveSetup" Value="INSTALLFOLDER=[INSTALLFOLDER]" />
-    <CustomAction Id="Action_ChangeActiveSetup" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetupUnregister" Return="check" Execute="immediate" />
-    
+    <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
+    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveOpenHKCU" Value="REMOVE_HKCU_OPEN_CMD=[REMOVE_HKCU_OPEN_CMD]" />
+    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="immediate" />
     
     <!-- Install Sequence -->
     <InstallExecuteSequence>
       <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_ChangeActiveSetup.SetProperty" Before="Action_ChangeActiveSetup">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ChangeActiveSetup" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed</Custom>
+
       <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Before="Action_ActiveSetup_RemoveOpenHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveOpenHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </InstallExecuteSequence>
     <AdminExecuteSequence>
       <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="Action_ChangeActiveSetup.SetProperty" Before="Action_ChangeActiveSetup">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ChangeActiveSetup" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed</Custom>
+
       <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Before="Action_ActiveSetup_RemoveOpenHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveOpenHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </AdminExecuteSequence>
 
     <!-- Create our keys in the Registry -->
@@ -159,9 +169,6 @@
       <!--this permanent because we need to keep that after install-->
       <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
         <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)"  />
-        <RegistryKey  Root='HKLM' Key='Software\Microsoft\Active Setup\Installed Components\[ProductName]' >
-          <RegistryValue Action='write' Name='StubPath' Type='string' Value='[CREATE_HKCU_OPEN_CMD]' />
-        </RegistryKey>
       </Component>
     </ComponentGroup>
   </Product>
