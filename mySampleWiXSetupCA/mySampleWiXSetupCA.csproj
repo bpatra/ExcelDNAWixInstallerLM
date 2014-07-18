@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="CustomAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegistryHelpers.cs" />
     <Content Include="CustomAction.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
