@@ -12,21 +12,17 @@ namespace ActiveSetupCommand
     {
         public const string SzBaseAddInKey = @"Software\Microsoft\Office\";
 
-        public static bool CreateOpenHkcuKey(string officeRegKeyVersions, string xll32Name, string xll64Name, string fullPathInstallFolder)
+        public static bool CreateOpenHkcuKey(Parameters parameters)
         {
             bool success = false;
             try
             {
                 Console.WriteLine("Enter try block of CreateOpenHKCUKey");
 
-                Console.WriteLine(string.Format("officeRegKeyVersions:{0};xll32Name:{1};xll64Name:{2};fullPathInstallFolder:{3}",
-                                          officeRegKeyVersions, xll32Name, xll64Name, fullPathInstallFolder));
-
-                if (officeRegKeyVersions.Length > 0)
+                if (parameters.SupportedOfficeVersion.Count > 0)
                 {
-                    List<string> lstVersions = officeRegKeyVersions.Split(',').ToList();
 
-                    foreach (string szOfficeVersionKey in lstVersions)
+                    foreach (string szOfficeVersionKey in parameters.SupportedOfficeVersion)
                     {
                         double nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
 
@@ -37,9 +33,9 @@ namespace ActiveSetupCommand
                         {
                             string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
-                            string szXllToRegister = GetAddInName(xll32Name, xll64Name, szOfficeVersionKey, nVersion);
+                            string szXllToRegister = GetAddInName(parameters.XllName, parameters.Xll64Name, szOfficeVersionKey, nVersion);
                             //for a localmachine install the xll's should be in the installFolder
-                            string fullPathToXll = Path.Combine(fullPathInstallFolder, szXllToRegister);
+                            string fullPathToXll = Path.Combine(parameters.InstallDirectory, szXllToRegister);
 
                             RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
                             if (rkExcelXll != null)
@@ -126,7 +122,7 @@ namespace ActiveSetupCommand
         }
 
 
-        public static bool RemoveHkcuOpenKey(string szOfficeRegKeyVersions, string szXll32Bit, string szXll64Bit)
+        public static bool RemoveHkcuOpenKey(Parameters parameters)
         {
             bool bFoundOffice = false;
             try
@@ -134,11 +130,10 @@ namespace ActiveSetupCommand
                 Console.WriteLine("Begin RemoveHKCUOpenKey");
 
 
-                if (szOfficeRegKeyVersions.Length > 0)
+                if (parameters.SupportedOfficeVersion.Count > 0)
                 {
-                    List<string> lstVersions = szOfficeRegKeyVersions.Split(',').ToList();
 
-                    foreach (string szOfficeVersionKey in lstVersions)
+                    foreach (string szOfficeVersionKey in parameters.SupportedOfficeVersion)
                     {
                         // only remove keys where office version is found
                         if (Registry.CurrentUser.OpenSubKey(SzBaseAddInKey + szOfficeVersionKey, false) != null)
@@ -156,8 +151,8 @@ namespace ActiveSetupCommand
                                 {
                                     //unregister both 32 and 64 xll
                                     if (szValueName.StartsWith("OPEN") &&
-                                        (rkAddInKey.GetValue(szValueName).ToString().Contains(szXll32Bit) ||
-                                         rkAddInKey.GetValue(szValueName).ToString().Contains(szXll64Bit)))
+                                        (rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.Xll64Name) ||
+                                         rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.XllName)))
                                     {
                                         rkAddInKey.DeleteValue(szValueName);
                                     }
@@ -178,7 +173,7 @@ namespace ActiveSetupCommand
 
         //Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
         //http://stackoverflow.com/questions/2203980/detect-whether-office-2010-is-32bit-or-64bit-via-the-registry
-        public static string GetAddInName(string szXll32Name, string szXll64Name, string szOfficeVersionKey, double nVersion)
+        private static string GetAddInName(string szXll32Name, string szXll64Name, string szOfficeVersionKey, double nVersion)
         {
             string szXllToRegister = string.Empty;
 

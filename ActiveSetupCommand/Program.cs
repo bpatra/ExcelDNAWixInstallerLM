@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,28 +15,30 @@ namespace ActiveSetupCommand
         {
             try
             {
-                CheckArgs(args);
-                Thread.Sleep(5*1000);
-                Console.WriteLine("Active setup ran successfully");
+                Console.WriteLine("Start extracting args: " + string.Join(";",args));
+                var parameters = Parameters.ExtractFromArgs(args);
+
+                switch (parameters.Command)
+                {
+                    case Command.Install:
+                        HkcuKeys.CreateOpenHkcuKey(parameters);
+                        break;
+                    case Command.Uninstall:
+                        HkcuKeys.CreateOpenHkcuKey(parameters);
+                        break;
+                    default:
+                        throw new NotSupportedException("unknown command");
+                }
+                Console.WriteLine("Command successfully executed!");
                 return 0;
             }
             catch (Exception exception)
             {
-                Console.Error.WriteLine(exception.Message);
+                Console.WriteLine("Error: "+ exception.Message);
                 return 1;
             }    
         }
 
-        private static void CheckArgs(string[] args)
-        {
-            if (args.Length == 0 || args.Length >=2)
-            {
-                throw new ArgumentException("Wrong number of arguments: one argument possible we found: " + args.Length);
-            }
-            if (args[0] != @"/i" || args[0] != @"/u")
-            {
-                throw new ArgumentException(@"There are two arguments possible: /i (install) or /u (uninstall).)");
-            }
-        }
+      
     }
 }
