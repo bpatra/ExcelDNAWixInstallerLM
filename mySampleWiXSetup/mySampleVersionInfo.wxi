@@ -8,4 +8,10 @@
   <!-- THIS GUID MUST BE UNIQUE PER PRODUCT -->
   <?define PRODUCTGUID="4b860165-3f7e-4f7a-863b-e07bbf492dc9"?>
 
+  <?define XLL32="mysample-AddIn-packed.xll"?>
+  <?define XLL64="mysample-AddIn64-packed.xll"?>
+  <?define CADLLNAME="mySampleWiXSetupCA.CA.dll"?>
+
+  <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013-->
+  <?define OFFICEREGKEYS="12.0,14.0,15.0"?>
 </Include>
