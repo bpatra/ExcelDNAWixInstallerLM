@@ -162,13 +162,14 @@
           <RegistryValue Action='write' Name='ProductVersion' Type='string' Value='[ProductVersion]' />
           <RegistryValue Action='write' Name='ProductName' Type='string' Value='[ProductName]' />
         </RegistryKey>
-
       </Component>
 
       <!--Component for the active setup-->
       <!--this permanent because we need to keep that after install-->
-      <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
-        <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)" PatchWholeFile="yes" />
+      <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER"  Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
+        <!--remove previous .exe if found, does not fail if not present...-->
+        <RemoveFile Id="_FileId_ActiveSetupExe_Remove" On ="install" Name="$(var.ActiveSetupExeName)"/>
+        <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)" />
       </Component>
     </ComponentGroup>
   </Product>
