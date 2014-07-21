@@ -15,7 +15,7 @@ namespace mySampleWiXSetupCA
     /// </remarks>
     public class CaParameters
     {
-        const string BasePathActiveSetup = @"SOFTWARE\Microsoft\Active Setup\Installed Components";
+        const string BasePathActiveSetup = @"SOFTWARE\Microsoft\Active Setup\Installed Components\";
 
         public string ProductName { get; private set; }
         public string Version { get; private set; }
