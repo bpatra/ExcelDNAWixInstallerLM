@@ -15,7 +15,7 @@ namespace ActiveSetupCommand
         {
             try
             {
-                Console.WriteLine("Start extracting args: " + string.Join(";",args));
+                Console.WriteLine("Start extracting args: " + string.Join(";", args));
                 var parameters = Parameters.ExtractFromArgs(args);
 
                 switch (parameters.Command)
@@ -24,17 +24,20 @@ namespace ActiveSetupCommand
                         HkcuKeys.CreateOpenHkcuKey(parameters);
                         break;
                     case Command.Uninstall:
-                        HkcuKeys.CreateOpenHkcuKey(parameters);
+                        HkcuKeys.RemoveHkcuOpenKey(parameters);
                         break;
                     default:
                         throw new NotSupportedException("unknown command");
                 }
                 Console.WriteLine("Command successfully executed!");
+                Console.ReadLine();
                 return 0;
             }
             catch (Exception exception)
             {
                 Console.WriteLine("Error: "+ exception.Message);
+                Console.WriteLine("Type any key to exit...");
+                Console.ReadLine();
                 return 1;
             }    
         }

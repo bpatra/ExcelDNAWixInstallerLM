@@ -16,20 +16,20 @@ namespace ActiveSetupCommand
         public List<string> SupportedOfficeVersion { get; set; } 
 
           // expected syntax should be
-        // pathToExe.exe /install mysample-AddIn-packed.xll mysample-AddIn64-packed.xll 'C:\Program Files\SampleCompany\MySample' '12.0,14.0,15.0'
-        // pathToExe.exe /uninstall mysample-AddIn-packed.xll mysample-AddIn64-packed.xll 'C:\Program Files\SampleCompany\MySample' '12.0,14.0,15.0'
+        // pathToExe.exe /install mysample-AddIn-packed.xll mysample-AddIn64-packed.xll '12.0,14.0,15.0'
+        // pathToExe.exe /uninstall mysample-AddIn-packed.xll mysample-AddIn64-packed.xll '12.0,14.0,15.0'
         public static Parameters ExtractFromArgs(string[] args)
         {
-            if (args.Length !=5)
+            if (args.Length != 4)
             {
-                throw new ArgumentException("Wrong number of arguments, should be 5 we found: " + args.Length);
+                throw new ArgumentException("Wrong number of arguments, should be 4 we found: " + args.Length);
             }
             var parameters = new Parameters();
             if (args[0] == "/install")
             {
                 parameters.Command = Command.Install;
             }
-            else if (args[0] == "/install")
+            else if (args[0] == "/uninstall")
             {
                 parameters.Command = Command.Uninstall;
             }
@@ -41,13 +41,12 @@ namespace ActiveSetupCommand
             parameters.XllName = args[1];
             parameters.Xll64Name = args[2];
 
-            if (!Directory.Exists(args[3]))
-            {
-                throw new DirectoryNotFoundException("Directory not found: " +args[3]);
-            }
-            parameters.InstallDirectory = args[3];
 
-            parameters.SupportedOfficeVersion = args[4].Split(',').ToList();
+            //The install directory of the xll is supposed to be the same as the .exe one.
+            string directory = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            parameters.InstallDirectory = directory; 
+
+            parameters.SupportedOfficeVersion = args[3].Split(',').ToList();
 
             return parameters;
         }

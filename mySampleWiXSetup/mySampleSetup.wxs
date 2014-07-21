@@ -111,7 +111,7 @@
     </Condition>
 
     <Property Id="CREATE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /install $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
-    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /uninstall $(var.OFFICEREGKEYS)" />
+    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /uninstall $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
     
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
