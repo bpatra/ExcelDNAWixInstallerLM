@@ -53,8 +53,6 @@ namespace mySampleWiXSetupCA
                     removeHkcuKey = Registry.CurrentUser.CreateSubKey(caParams.RemoveRegistrySubKey);
                 }
                 UpdateActiveSetupKey(removeHkcuKey, caParams.RemoveComponentId, caParams.RemoveCommand, caParams.Version, true);
-
-
             }
             catch (SecurityException ex)
             {
@@ -146,7 +144,7 @@ namespace mySampleWiXSetupCA
             activeSetupKey.SetValue("ComponentID", componentId, RegistryValueKind.String);
             activeSetupKey.SetValue("StubPath", command, RegistryValueKind.String);
             activeSetupKey.SetValue("Version",version,RegistryValueKind.String);
-            activeSetupKey.SetValue("IsInstalled",isInstalled ? 1 : 0 ,RegistryValueKind.DWord);
+            activeSetupKey.SetValue("IsInstalled", isInstalled ? 1 : 0 ,RegistryValueKind.DWord);
         }
     }
 }

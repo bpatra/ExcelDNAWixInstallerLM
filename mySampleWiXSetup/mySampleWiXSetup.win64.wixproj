@@ -24,7 +24,7 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
     <LinkerAdditionalOptions>-cc "$(OutputPath)\" -reusecab</LinkerAdditionalOptions>
-    <SuppressIces>ICE91;ICE61;ICE80</SuppressIces>
+    <SuppressIces>ICE91;ICE61;ICE80;ICE03</SuppressIces>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DefineConstants>ProcessorArchitecture=x64</DefineConstants>
   </PropertyGroup>

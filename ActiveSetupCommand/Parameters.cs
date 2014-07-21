@@ -50,7 +50,6 @@ namespace ActiveSetupCommand
 
             return parameters;
         }
-
     }
 
     enum Command
