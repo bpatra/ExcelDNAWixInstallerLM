@@ -23,6 +23,9 @@ namespace mySampleWiXSetupCA
         {
             try
             {
+                session.Log("Start CaActiveSetup_RemoveOpenHKCU...");
+                var registryAbstractor = new RegistryAbstractor(session);
+
                 //1) set the Active Setup (HKLM and current user) that sets the OPEN Key to installed : 0
                 var caParams = CaParameters.ExtractFromSession(session);
                 RegistryKey createHklmKey = Registry.LocalMachine.OpenSubKey(caParams.CreateRegistrySubKey, true);
@@ -38,20 +41,13 @@ namespace mySampleWiXSetupCA
                     UpdateActiveSetupKey(createHkcuKey, caParams.CreateComponentId, caParams.CreateCommand, caParams.Version, false);
                 }
 
+                
                 //2)set the Active Setup that will remove the Open key.
-                RegistryKey removeHklmKey = Registry.LocalMachine.OpenSubKey(caParams.RemoveRegistrySubKey, true);
-                if(removeHklmKey == null)
-                {
-                    removeHklmKey = Registry.LocalMachine.CreateSubKey(caParams.RemoveRegistrySubKey);
-                }
+                RegistryKey removeHklmKey = registryAbstractor.OpenOrCreateHklmKey(caParams.RemoveRegistrySubKey);
                 UpdateActiveSetupKey(removeHklmKey, caParams.RemoveComponentId,caParams.RemoveCommand,caParams.Version,true);
 
                 //PRO Tip: create the HKCU active setup key directly to avoid to trigger active setup when the current user will logon...
-                RegistryKey removeHkcuKey = Registry.CurrentUser.OpenSubKey(caParams.RemoveRegistrySubKey, true);
-                if (removeHkcuKey == null)
-                {
-                    removeHkcuKey = Registry.CurrentUser.CreateSubKey(caParams.RemoveRegistrySubKey);
-                }
+                RegistryKey removeHkcuKey = registryAbstractor.OpenOrCreateHkcuKey(caParams.RemoveRegistrySubKey);
                 UpdateActiveSetupKey(removeHkcuKey, caParams.RemoveComponentId, caParams.RemoveCommand, caParams.Version, true);
             }
             catch (SecurityException ex)
@@ -69,6 +65,7 @@ namespace mySampleWiXSetupCA
                 session.Log("CaActiveSetup_RemoveOpenHKCU Exception" + ex.Message);
                 return ActionResult.Failure;
             }
+            session.Log("... end CaActiveSetup_RemoveOpenHKCU, successful!");
             return ActionResult.Success;
         }
 
@@ -84,6 +81,8 @@ namespace mySampleWiXSetupCA
         {
             try
             {
+                session.Log("Start CaActiveSetup_SetOpenHKCU...");
+                var registryAbstractor = new RegistryAbstractor(session);
                 var caParams = CaParameters.ExtractFromSession(session);
                 //1) uninstall the active setup for removing the keys that could have been set before.
                 RegistryKey removeHklmKey = Registry.LocalMachine.OpenSubKey(caParams.RemoveRegistrySubKey, true);
@@ -100,20 +99,12 @@ namespace mySampleWiXSetupCA
                 }
 
                 //2) install the active setup that will set the OPEN key.
-                RegistryKey hklmKey = Registry.LocalMachine.OpenSubKey(caParams.CreateRegistrySubKey,true);
-                if (hklmKey == null)
-                {
-                    hklmKey = Registry.LocalMachine.CreateSubKey(caParams.CreateRegistrySubKey);
-                }
+                RegistryKey hklmKey = registryAbstractor.OpenOrCreateHklmKey(caParams.CreateRegistrySubKey);
 
                 UpdateActiveSetupKey(hklmKey, caParams.CreateComponentId, caParams.CreateCommand, caParams.Version, true);
 
                 //PRO Tip: create the HKCU active setup key directly to avoid to trigger active setup when the current user will logon...
-                RegistryKey hkcuKey = Registry.CurrentUser.OpenSubKey(caParams.CreateRegistrySubKey, true);
-                if (hkcuKey == null)
-                {
-                    hkcuKey = Registry.CurrentUser.CreateSubKey(caParams.CreateRegistrySubKey);
-                }
+                RegistryKey hkcuKey = registryAbstractor.OpenOrCreateHkcuKey(caParams.CreateRegistrySubKey);
                 UpdateActiveSetupKey(hkcuKey, caParams.CreateComponentId, caParams.CreateCommand, caParams.Version, true);
             }
             catch (SecurityException ex)
@@ -131,6 +122,7 @@ namespace mySampleWiXSetupCA
                 session.Log("CaActiveSetup_SetOpenHKCU Exception" + ex.Message);
                 return ActionResult.Failure;
             }
+            session.Log("... end CaActiveSetup_SetOpenHKCU, successful!");
             return ActionResult.Success;
         }
 
