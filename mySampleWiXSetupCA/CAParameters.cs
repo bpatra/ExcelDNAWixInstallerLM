@@ -53,7 +53,7 @@ namespace mySampleWiXSetupCA
             const string createHkcuCommandKey = "CREATE_HKCU_OPEN_FULL";
             const string createGuidKey = "ACTIVESETUP_CREATE_GUID";
             const string productNameKey = "PRODUCTNAME";
-            const string versionKey = "VERSIONKEY";
+            const string versionKey = "VERSION";
             const string removeHkcuCommand = "REMOVE_HKCU_OPEN_FULL";
             const string removeGuidKey = "ACTIVESETUP_REMOVE_GUID";
 

@@ -2,6 +2,7 @@
 <Include>
 
   <!-- Constants (this property should be updated by the build process) -->
+  <!-- That is important for the active setup...-->
   <?define PRODUCTVERSION="66.6.6.6666" ?>
 
   <!-- Constants -->
