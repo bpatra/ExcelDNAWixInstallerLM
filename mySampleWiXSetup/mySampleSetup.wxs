@@ -110,16 +110,21 @@
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
     </Condition>
 
-    <Property Id="CREATE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /install $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
-    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="$(var.ActiveSetupExeName) /uninstall $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
+    <!--command arguments to pass to .exe-->
+    <Property Id="CREATE_HKCU_OPEN_CMD" Value="/install $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
+    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="/uninstall $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
     
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
     
     <!--This two custom actions (call a the .exe) are responsible for set/remove the HKCU key for the current user.-->
-    <CustomAction Id="Action_SetOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[INSTALLFOLDER][CREATE_HKCU_OPEN_CMD]"/>
-    <CustomAction Id="Action_RemoveOPENHKCU" Return="check" Directory="INSTALLFOLDER" Execute="deferred" ExeCommand="[INSTALLFOLDER][REMOVE_HKCU_OPEN_CMD]"/>
+    <CustomAction Id="Action_SetOPENHKCU_Cmd" Property="Action_SetOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD]' />
+    <CustomAction Id="Action_SetOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred"/>
 
+    <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
+    <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" />
+  
+    
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value="CREATE_HKCU_OPEN_CMD=[INSTALLFOLDER][CREATE_HKCU_OPEN_CMD]" />
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="immediate" />
@@ -130,10 +135,15 @@
     
      <!--Install Sequence--> 
     <InstallExecuteSequence>
+      <!--INSTALL-->
+      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed</Custom>
       <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed</Custom>
+      
       <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed</Custom>
       <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed</Custom>
 
+      <!--UNINSTALL-->
+      <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Before="Action_ActiveSetup_RemoveOpenHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_ActiveSetup_RemoveOpenHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>

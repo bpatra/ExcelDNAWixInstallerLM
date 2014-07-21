@@ -30,14 +30,11 @@ namespace ActiveSetupCommand
                         throw new NotSupportedException("unknown command");
                 }
                 Console.WriteLine("Command successfully executed!");
-                Console.ReadLine();
                 return 0;
             }
             catch (Exception exception)
             {
                 Console.WriteLine("Error: "+ exception.Message);
-                Console.WriteLine("Type any key to exit...");
-                Console.ReadLine();
                 return 1;
             }    
         }
