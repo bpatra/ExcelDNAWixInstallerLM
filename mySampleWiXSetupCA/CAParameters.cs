@@ -81,7 +81,7 @@ namespace mySampleWiXSetupCA
 
         private static string ExtractAndCheck(Session session, string key)
         {
-            string value = session[key];
+            string value = session.CustomActionData[key];
             if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException(key + "is not found");

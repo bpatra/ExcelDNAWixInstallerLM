@@ -127,11 +127,11 @@
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
-    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="immediate" />
+    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="commit" />
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
-    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="immediate" />
+    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="commit" />
     
      <!--Install Sequence--> 
     <InstallExecuteSequence>
