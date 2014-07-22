@@ -29,6 +29,11 @@ namespace mySampleWiXSetupCA
             get { return BasePathActiveSetup + CreateActiveSetupGuid; }
         }
 
+        public string DefaultCreate 
+        {
+            get { return "Install" + ProductName; }
+        }
+
         public string CreateComponentId
         {
             get { return ProductName + " ActiveSetup Create Open Key"; }
@@ -46,6 +51,11 @@ namespace mySampleWiXSetupCA
         public string RemoveComponentId
         {
             get { return ProductName + " ActiveSetup Remove Open Key"; }
+        }
+
+        public string DefaultRemove
+        {
+            get { return "Uninstall" + ProductName; }
         }
 
         public static CaParameters ExtractFromSession(Session session)

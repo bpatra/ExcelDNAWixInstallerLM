@@ -140,19 +140,21 @@ namespace manageOpenKey
 
                         string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
 
-                        RegistryKey rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true);
-                        if (rkAddInKey != null)
+                        using (RegistryKey rkAddInKey = Registry.CurrentUser.OpenSubKey(szKeyName, true))
                         {
-                            string[] szValueNames = rkAddInKey.GetValueNames();
-
-                            foreach (string szValueName in szValueNames)
+                            if (rkAddInKey != null)
                             {
-                                //unregister both 32 and 64 xll
-                                if (szValueName.StartsWith("OPEN") &&
-                                    (rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.Xll64Name) ||
-                                        rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.XllName)))
+                                string[] szValueNames = rkAddInKey.GetValueNames();
+
+                                foreach (string szValueName in szValueNames)
                                 {
-                                    rkAddInKey.DeleteValue(szValueName);
+                                    //unregister both 32 and 64 xll
+                                    if (szValueName.StartsWith("OPEN") &&
+                                        (rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.Xll64Name) ||
+                                            rkAddInKey.GetValue(szValueName).ToString().Contains(parameters.XllName)))
+                                    {
+                                        rkAddInKey.DeleteValue(szValueName);
+                                    }
                                 }
                             }
                         }
