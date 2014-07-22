@@ -156,7 +156,10 @@ namespace mySampleWiXSetupCA
             activeSetupKey.SetValue("",defaultForKey);
             activeSetupKey.SetValue("ComponentID", componentId, RegistryValueKind.String);
             activeSetupKey.SetValue("StubPath", command, RegistryValueKind.String);
-            activeSetupKey.SetValue("Version",version,RegistryValueKind.String);
+
+            //Found that . cannot be used for version
+            //http://www.sepago.de/e/helge/2010/04/22/active-setup-explained
+            activeSetupKey.SetValue("Version",version.Replace('.',','),RegistryValueKind.String); 
             activeSetupKey.SetValue("IsInstalled", isInstalled ? 1 : 0 ,RegistryValueKind.DWord);
         }
     }
