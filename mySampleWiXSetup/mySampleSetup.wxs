@@ -103,19 +103,19 @@
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
     
     <!--This two custom actions (call a the .exe) are responsible for set/remove the HKCU key for the current user.-->
-    <CustomAction Id="Action_SetOPENHKCU_Cmd" Property="Action_SetOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD]' />
+    <CustomAction Id="Action_SetOPENHKCU_Cmd" Property="Action_SetOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD]' />
     <CustomAction Id="Action_SetOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred"/>
 
-    <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
+    <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
     <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" />
   
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
-    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
+    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="commit" />
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
-    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.ActiveSetupExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
+    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
     <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="commit" />
     
      <!--Install Sequence--> 
@@ -167,9 +167,12 @@
       <!--Component for the active setup-->
       <!--this permanent because we need to keep that after install-->
       <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER"  Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
-        <!--remove previous .exe if found, does not fail if not present...-->
-        <RemoveFile Id="_FileId_ActiveSetupExe_Remove" On ="install" Name="$(var.ActiveSetupExeName)"/>
-        <File Id="_FileId_ActiveSetupExe" Source="$(var.ActiveSetupExeFullPath)" />
+        <!--remove previous .exe and README.txt if found, does not fail if not present...-->
+        <RemoveFile Id="_FileId_manageOpenKeyExe_Remove" On ="install" Name="$(var.manageOpenKeyExeName)"/>
+        <RemoveFile Id="_FileId_manageOpenKeyREADME_Remove" On ="install" Name="$(var.manageOpenKeyREADMEName)"/>
+      
+        <File Id="_FileId_manageOpenKeyExe" Source="$(var.manageOpenKeyDir)$(var.manageOpenKeyExeName)" />
+      <File Id="_FileId_manageOpenKeyREADME" Source="$(var.manageOpenKeyDir)$(var.manageOpenKeyREADMEName)" />
       </Component>
     </ComponentGroup>
   </Product>
