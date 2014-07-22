@@ -9,7 +9,7 @@
   <!-- Id="*" to allow reinstalling and automatically removing previous version-->
   <Product Id="*" Name="$(var.PRODUCT_NAME)" Language="1033" Codepage='1252' Version="$(var.PRODUCTVERSION)" Manufacturer="$(var.COMPANY_NAME)" UpgradeCode="$(var.PRODUCTGUID)">
 
-    <Package Comments="$(var.PRODUCT_NAME) $(var.ProcessorArchitecture) $(var.PRODUCTVERSION)" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages='1033' SummaryCodepage='1252' Platform="$(var.ProcessorArchitecture)" />
+    <Package Comments="$(var.PRODUCT_NAME) $(var.ProcessorArchitecture) $(var.PRODUCTVERSION)" InstallPrivileges ="elevated" InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Languages='1033' SummaryCodepage='1252' Platform="$(var.ProcessorArchitecture)" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of $(var.PRODUCT_NAME) is already installed." AllowSameVersionUpgrades="yes" />
     <Media Id="1" Cabinet="$(var.PRODUCT_NAME)_$(var.ProcessorArchitecture).cab" EmbedCab="yes" />
@@ -107,16 +107,16 @@
     <CustomAction Id="Action_SetOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred"/>
 
     <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
-    <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" />
+    <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA"  DllEntry="CAQuietExec" Execute="deferred" />
   
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
-    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="commit" />
+    <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" Impersonate="no" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="commit" />
     
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_CREATE_GUID=$(var.ACTIVESETUP_CREATE_GUID);ACTIVESETUP_REMOVE_GUID=$(var.ACTIVESETUP_REMOVE_GUID);VERSION=$(var.PRODUCTVERSION);PRODUCTNAME=$(var.PRODUCT_NAME)' />
-    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="commit" />
+    <CustomAction Id="Action_ActiveSetup_RemoveOpenHKCU" BinaryKey="_BinID_CustomAction" Impersonate="no" DllEntry="CaActiveSetup_RemoveOpenHKCU" Return="check" Execute="commit" />
     
      <!--Install Sequence--> 
     <InstallExecuteSequence>
