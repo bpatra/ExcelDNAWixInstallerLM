@@ -56,8 +56,8 @@
     <Content Include="Resources\mySample_License.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActiveSetupCommand\ActiveSetupCommand.csproj">
-      <Name>ActiveSetupCommand</Name>
+    <ProjectReference Include="..\manageOpenKey\manageOpenKey.csproj">
+      <Name>manageOpenKey</Name>
       <Project>{059c99be-43cb-4b0d-8222-282617d239d5}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>

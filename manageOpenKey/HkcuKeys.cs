@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Win32;
 
-namespace ActiveSetupCommand
+namespace manageOpenKey
 {
     static class HkcuKeys
     {

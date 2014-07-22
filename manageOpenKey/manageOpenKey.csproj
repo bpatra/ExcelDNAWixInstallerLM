@@ -7,8 +7,8 @@
     <ProjectGuid>{059C99BE-43CB-4B0D-8222-282617D239D5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ActiveSetupCommand</RootNamespace>
-    <AssemblyName>ActiveSetupCommand</AssemblyName>
+    <RootNamespace>manageOpenKey</RootNamespace>
+    <AssemblyName>manageOpenKey</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

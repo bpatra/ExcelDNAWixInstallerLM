@@ -26,8 +26,8 @@
   <?define CADLLFULLPATH="$(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
   
   <!-- the .exe file path that will be executed by the active setup-->
-  <?define ActiveSetupExeFullPath="$(var.ActiveSetupCommand.TargetPath)"?>
-  <?define ActiveSetupExeName="$(var.ActiveSetupCommand.TargetName).exe"?>
+  <?define ActiveSetupExeFullPath="$(var.manageOpenKey.TargetPath)"?>
+  <?define ActiveSetupExeName="$(var.manageOpenKey.TargetName).exe"?>
   
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
     For further versions of excel you'll have to update the .wxs path check (grep EXCELSUPPORTEDVERSION in .wxs project) 
