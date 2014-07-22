@@ -17,7 +17,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\$(Platform)\</IntermediateOutputPath>
     <DefineConstants>Debug;ProcessorArchitecture=x64</DefineConstants>
     <LinkerAdditionalOptions>-cc "$(OutputPath)\" -reusecab</LinkerAdditionalOptions>
-    <SuppressIces>ICE91;ICE61;ICE80</SuppressIces>
+    <SuppressIces>ICE91;ICE61;ICE80;ICE03</SuppressIces>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
