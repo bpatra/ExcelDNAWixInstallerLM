@@ -19,8 +19,8 @@
   <?define XLL64="mysample-AddIn64-packed.xll"?>
  
   <!--mysample here corresponds to the name of the C# project building the xll-->
-  <?define XLLFULLPATH32="$(var.mysample.TargetDir)$(var.XLL32)"?>
-  <?define XLLFULLPATH64="$(var.mysample.TargetDir)$(var.XLL64)"?>
+  <?define XLLFULLPATH32="$(var.mySample.TargetDir)$(var.XLL32)"?>
+  <?define XLLFULLPATH64="$(var.mySample.TargetDir)$(var.XLL64)"?>
   
   <!--mySampleWiXSetupCA is the name of the project containing the custom actions-->
   <?define CADLLFULLPATH="$(var.mySampleWiXSetupCA.TargetDir)mySampleWiXSetupCA.CA.dll"?>
