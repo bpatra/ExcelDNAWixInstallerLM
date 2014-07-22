@@ -59,24 +59,15 @@
       Secure=yes must be used to fixed the issue as describe here: http://www.installsite.org/pages/en/msi/articles/VistaMSI/
     -->
 
-    <!-- Get bitness of installed office version -->
-    <Property Id="OFFICE2007BITNESS" Value="x86" Secure="yes"/>
-    <!-- No x64 version of 2007 -->
-    <Property Id="OFFICE2010BITNESS" Secure="yes">
-      <?if $(var.ProcessorArchitecture) = x64 ?>
-      <RegistrySearch Id="Office2010Bitness64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Outlook" Name="Bitness" Type="raw" Win64="yes" />
-      <?endif?>
-      <RegistrySearch Id="Office2010Bitness32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Outlook" Name="Bitness" Type="raw" Win64="no" />
-    </Property>
-    <Property Id="OFFICE2013BITNESS" Secure="yes">
-      <?if $(var.ProcessorArchitecture) = x64 ?>
-      <RegistrySearch Id="Office2013Bitness64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Outlook" Name="Bitness" Type="raw"  Win64="yes" />
-      <?endif?>
-      <RegistrySearch Id="Office2013Bitness32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Outlook" Name="Bitness" Type="raw"  Win64="no" />
-    </Property>
 
-    <!-- Get install path of installed office version -->
-    <Property Id="EXCEL2007INSTALLPATH" Secure="yes">
+    <PropertyRef Id="NETFRAMEWORK40FULL" />
+    <Condition Message="This setup requires the .NET Framework 4.0 to be installed.">
+      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
+    </Condition>
+    
+    <!-- Detect if at least one office excel has been found, to this aim use installation PATH -->
+    <!--EXCELSUPPORTEDVERSION-->
+       <Property Id="EXCEL2007INSTALLPATH" Secure="yes">
       <?if $(var.ProcessorArchitecture) = x64 ?>
       <RegistrySearch Id="OfficeExcel2007InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\12.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
       <?endif?>
@@ -94,13 +85,7 @@
       <?endif?>
       <RegistrySearch Id="OfficeExcel2013InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
-
-    <PropertyRef Id="NETFRAMEWORK40FULL" />
-    <Condition Message="This setup requires the .NET Framework 4.0 to be installed.">
-      <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
-    </Condition>
     
-    <!-- Detect if at least one office excel has been found -->
     <?if $(var.ProcessorArchitecture) = x86 ?>
     <?define OfficeExcelNotFoundMessage=This setup requires Office Excel 2007, 2010 and/or 2013 (32-bit). ?>
     <?elseif $(var.ProcessorArchitecture) = x64 ?>

@@ -30,7 +30,7 @@
   <?define ActiveSetupExeName="$(var.ActiveSetupCommand.TargetName).exe"?>
   
   <!--IMPORTANT ALL MS OFFICE SUPPORTED VERSIONS ARE HERE Office 2007, 2010, 2013
-    For further versions of excel you'll have to update the installation path check (see condition "Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH" in .wxs project) 
+    For further versions of excel you'll have to update the .wxs path check (grep EXCELSUPPORTEDVERSION in .wxs project) 
   -->
   <?define OFFICEREGKEYS="12.0,14.0,15.0"?>
   
