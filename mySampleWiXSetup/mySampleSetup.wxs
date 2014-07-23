@@ -109,18 +109,23 @@
 
     <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
     <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA"  DllEntry="CAQuietExec" Execute="deferred" />
-
-    <!--These C# Custom action needs to be impersonate to modify the HKCU-->
-    <!--TODO-->
     
     <!--These C# Custom action should not be impersonate to modify the HKLM-->
-    <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
+    <!--This custom action is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_SetHKLM.SetProperty" Return="check" Property="Action_ActiveSetup_SetHKLM" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_GUID=$(var.ACTIVESETUP_GUID);VERSION=$(var.PRODUCTVERSION);COMPANYNAME=$(var.COMPANY_NAME);PRODUCTNAME=$(var.PRODUCT_NAME)' />
     <CustomAction Id="Action_ActiveSetup_SetHKLM" BinaryKey="_BinID_CustomAction" Impersonate="no" DllEntry="CaActiveSetup_SetHKLM" Return="check" Execute="commit" />
     
-    <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
+    <!--This custom action  is used to set up the ActiveSetup HKLM key for uninstall that uses the REMOVE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_RemoveHKLM.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveHKLM" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_GUID=$(var.ACTIVESETUP_GUID);VERSION=$(var.PRODUCTVERSION);COMPANYNAME=$(var.COMPANY_NAME);PRODUCTNAME=$(var.PRODUCT_NAME)' />
     <CustomAction Id="Action_ActiveSetup_RemoveHKLM" BinaryKey="_BinID_CustomAction" Impersonate="no" DllEntry="CaActiveSetup_RemoveHKLM" Return="check" Execute="commit" />
+
+    <!--These C# Custom action needs to be impersonate to modify the HKCU-->
+    <!--This custom action is used to set up the ActiveSetup HKCU key -->
+    <CustomAction Id="Action_ActiveSetup_SetHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_GUID=$(var.ACTIVESETUP_GUID);VERSION=$(var.PRODUCTVERSION);COMPANYNAME=$(var.COMPANY_NAME);PRODUCTNAME=$(var.PRODUCT_NAME)' />
+    <CustomAction Id="Action_ActiveSetup_SetHKCU" BinaryKey="_BinID_CustomAction" Impersonate="yes" DllEntry="CaActiveSetup_SetHKCU" Return="check" Execute="commit" />
+
+    <CustomAction Id="Action_ActiveSetup_RemoveHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_RemoveHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_GUID=$(var.ACTIVESETUP_GUID);VERSION=$(var.PRODUCTVERSION);COMPANYNAME=$(var.COMPANY_NAME);PRODUCTNAME=$(var.PRODUCT_NAME)' />
+    <CustomAction Id="Action_ActiveSetup_RemoveHKCU" BinaryKey="_BinID_CustomAction" Impersonate="yes" DllEntry="CaActiveSetup_RemoveHKCU" Return="check" Execute="commit" />
     
      <!--Install Sequence--> 
     <InstallExecuteSequence>
@@ -131,11 +136,18 @@
       <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
       <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
 
+      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+
       <!--UNINSTALL-->
       <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      
       <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+
+      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>     
     </InstallExecuteSequence>
     <AdminExecuteSequence>
       <!--INSTALL (+ Repair and Upgrade)-->
@@ -145,11 +157,18 @@
       <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
       <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
 
+      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+
       <!--UNINSTALL-->
       <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+
       <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
       <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+
+      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
     </AdminExecuteSequence>
 
     <!-- Create our keys in the Registry -->
