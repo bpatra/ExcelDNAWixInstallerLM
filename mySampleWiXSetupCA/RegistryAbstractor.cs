@@ -11,7 +11,7 @@ namespace mySampleWiXSetupCA
     /// Wraps registry action for logging.
     /// </summary>
     /// <remarks>
-    /// This may or may not write in the Wow6432 but actually we do not care....
+    /// For the sake of simplicity use only the 32 ActiveSetup registry...
     /// </remarks>
     class RegistryAbstractor
     {
@@ -41,20 +41,21 @@ namespace mySampleWiXSetupCA
 
         public RegistryKey OpenOrCreateHklmKey(string subKey)
         {
-            return Open( subKey, true, str => Registry.LocalMachine.OpenSubKey(str, true),
-                        str => Registry.LocalMachine.CreateSubKey(str));
+            RegistryKey hklmBase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            return Open( subKey, true, str => hklmBase.OpenSubKey(str, true),str => hklmBase.CreateSubKey(str));
         }
 
         public RegistryKey OpenOrCreateHkcuKey(string subKey)
         {
-            return Open( subKey, false, str => Registry.CurrentUser.OpenSubKey(str, true),
-                        str => Registry.CurrentUser.CreateSubKey(str));
+            RegistryKey hkcuBase = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            return Open( subKey, false, str => hkcuBase.OpenSubKey(str, true), str => hkcuBase.CreateSubKey(str));
         }
 
         public void DeleteHkcuKey(string subKey)
         {
+            RegistryKey hkcuBase = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             _session.Log("Start the delevetion of  HKCU sub key " + subKey);
-            Registry.CurrentUser.DeleteSubKey(subKey);
+            hkcuBase.DeleteSubKey(subKey);
         }
     }
 }
