@@ -101,7 +101,8 @@
     
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
-    
+
+    <!--These .Exe Custom action should not be impersonate to modify the current user HKCU-->
     <!--This two custom actions (call a the .exe) are responsible for set/remove the HKCU key for the current user.-->
     <CustomAction Id="Action_SetOPENHKCU_Cmd" Property="Action_SetOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD]' />
     <CustomAction Id="Action_SetOPENHKCU" Return="check" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred"/>
@@ -109,7 +110,7 @@
     <CustomAction Id="Action_RemoveOPENHKCU_Cmd" Property="Action_RemoveOPENHKCU"  Execute="immediate" Value='"[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD]'/>
     <CustomAction Id="Action_RemoveOPENHKCU" Return="check" BinaryKey="WixCA"  DllEntry="CAQuietExec" Execute="deferred" />
   
-    
+    <!--These C# Custom action needs to be impersonate to modify the HKLM-->
     <!--This custom action (in C#) is used to set up the ActiveSetup HKLM key for install that uses the CREATE_HKCU_OPEN_CMD-->
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU.SetProperty" Return="check" Property="Action_ActiveSetup_SetOpenHKCU" Value='CREATE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [CREATE_HKCU_OPEN_CMD];REMOVE_HKCU_OPEN_FULL="[INSTALLFOLDER]$(var.manageOpenKeyExeName)" [REMOVE_HKCU_OPEN_CMD];ACTIVESETUP_GUID=$(var.ACTIVESETUP_GUID);VERSION=$(var.PRODUCTVERSION);COMPANYNAME=$(var.COMPANY_NAME);PRODUCTNAME=$(var.PRODUCT_NAME)' />
     <CustomAction Id="Action_ActiveSetup_SetOpenHKCU" BinaryKey="_BinID_CustomAction" Impersonate="no" DllEntry="CaActiveSetup_SetOpenHKCU" Return="check" Execute="commit" />

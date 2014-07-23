@@ -45,16 +45,17 @@ namespace mySampleWiXSetupCA
                         str => Registry.LocalMachine.CreateSubKey(str));
         }
 
-        public RegistryKey OpenOrCreateHkcuKey(string subKey)
-        {
-            return Open( subKey, false, str => Registry.CurrentUser.OpenSubKey(str, true),
-                        str => Registry.CurrentUser.CreateSubKey(str));
-        }
+        //no longer needed, the HKCU will not be modified because the CustomAction is impersonated.
+        //public RegistryKey OpenOrCreateHkcuKey(string subKey)
+        //{
+        //    return Open( subKey, false, str => Registry.CurrentUser.OpenSubKey(str, true),
+        //                str => Registry.CurrentUser.CreateSubKey(str));
+        //}
 
-        public void DeleteHkcuKey(string subKey)
-        {
-            _session.Log("Start the delevetion of  HKCU sub key " + subKey);
-            Registry.CurrentUser.DeleteSubKey(subKey);
-        }
+        //public void DeleteHkcuKey(string subKey)
+        //{
+        //    _session.Log("Start the delevetion of  HKCU sub key " + subKey);
+        //    Registry.CurrentUser.DeleteSubKey(subKey);
+        //}
     }
 }

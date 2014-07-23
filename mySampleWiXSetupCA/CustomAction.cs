@@ -14,7 +14,6 @@ namespace mySampleWiXSetupCA
     {
         /// <summary>
         /// Change the active setup responsible for invoking the .exe to put IsInstalled to false and pass the command for removing in the StubPath.
-        /// We also try to delete the active setup HKCU key for the current user this will avoid the message prompt (for him only)
         /// </summary>
         /// <param name="session"><seealso cref="CaParameters"/></param>
         /// <returns>success status</returns>
@@ -26,19 +25,15 @@ namespace mySampleWiXSetupCA
                 session.Log("Start CaActiveSetup_RemoveOpenHKCU...");
                 var registryAbstractor = new RegistryAbstractor(session);
 
-                //Set the Active Setup (HKLM and current user) that sets the OPEN Key to installed : 0
+                //Set the Active Setup ot IsInstalled = 0 and change the StubPath
                 var caParams = CaParameters.ExtractFromSession(session);
-                using(RegistryKey createHklmKey =registryAbstractor.OpenOrCreateHkcuKey(caParams.RegistrySubKey))
+                using(RegistryKey createHklmKey = registryAbstractor.OpenOrCreateHklmKey(caParams.RegistrySubKey))
                 {
                     if (createHklmKey != null)
                     {
                         UpdateActiveSetupKey(createHklmKey, caParams.Default, caParams.CreateComponentId,caParams.CreateCommand, caParams.RemoveCommand,caParams.Version,false);
                     }
                 }
-
-               //PRO Tip: deletes the HKCU active setup key for the current user to avoid the message prompt for him
-               //see https://github.com/bpatra/ExcelDNAWixInstallerLM/issues/6
-               registryAbstractor.DeleteHkcuKey(caParams.RegistrySubKey);
             }
             catch (SecurityException ex)
             {
@@ -62,7 +57,6 @@ namespace mySampleWiXSetupCA
 
         /// <summary>
         /// Update/create the active setup responsible for invoking the .exe to put IsInstalled to true and pass the command for installing in the StubPath.
-        /// We also try to update/create the active setup HKCU key for the current user to avoid the active setup to be triggered for the future login (for him at least).
         /// </summary>
         /// <param name="session"><seealso cref="CaParameters"/></param>
         /// <returns>success status</returns>
@@ -80,12 +74,6 @@ namespace mySampleWiXSetupCA
                 using (RegistryKey hklmKey = registryAbstractor.OpenOrCreateHklmKey(caParams.RegistrySubKey))
                 {
                     UpdateActiveSetupKey(hklmKey, caParams.Default, caParams.CreateComponentId, caParams.CreateCommand, caParams.RemoveCommand, caParams.Version, true);
-                }
-
-                //PRO Tip: create the HKCU active setup key directly to avoid to trigger active setup when the current user will logon...
-                using (RegistryKey hkcuKey = registryAbstractor.OpenOrCreateHkcuKey(caParams.RegistrySubKey))
-                {
-                    UpdateHkcuActiveSetupKey(hkcuKey, caParams.Version);
                 }
             }
             catch (SecurityException ex)
@@ -122,15 +110,6 @@ namespace mySampleWiXSetupCA
             //http://www.sepago.de/e/helge/2010/04/22/active-setup-explained
             activeSetupKey.SetValue("Version",version.Replace('.',','),RegistryValueKind.String); 
             activeSetupKey.SetValue("IsInstalled", isInstalled ? 1 : 0 ,RegistryValueKind.DWord);
-        }
-
-        private static void UpdateHkcuActiveSetupKey(RegistryKey activeSetupKey, string version)
-        {
-            if (activeSetupKey == null)
-            {
-                throw new ArgumentNullException("activeSetupKey");
-            }
-            activeSetupKey.SetValue("Version", version.Replace('.', ','), RegistryValueKind.String); 
         }
     }
 }
