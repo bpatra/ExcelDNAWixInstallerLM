@@ -18,7 +18,7 @@ namespace mySampleWiXSetupCA
         /// <param name="session"><seealso cref="CaParameters"/></param>
         /// <returns>success status</returns>
         [CustomAction]
-        public static ActionResult CaActiveSetup_RemoveOpenHKCU(Session session)
+        public static ActionResult CaActiveSetup_RemoveHKLM(Session session)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace mySampleWiXSetupCA
         /// <param name="session"><seealso cref="CaParameters"/></param>
         /// <returns>success status</returns>
         [CustomAction]
-        public static ActionResult CaActiveSetup_SetOpenHKCU(Session session)
+        public static ActionResult CaActiveSetup_SetHKLM(Session session)
         {
             try
             {
