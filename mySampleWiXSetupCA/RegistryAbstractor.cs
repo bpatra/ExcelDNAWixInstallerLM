@@ -16,9 +16,21 @@ namespace mySampleWiXSetupCA
     class RegistryAbstractor
     {
         private readonly Session _session;
+        private readonly RegistryKey _baseRegistryHklm;
+        private readonly RegistryKey _baseRegistryHkcu;
         public RegistryAbstractor(Session session)
         {
             _session = session;
+            if (Environment.Is64BitOperatingSystem) //Use OS not process...
+            {
+                _baseRegistryHklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                _baseRegistryHkcu = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64);
+            }
+            else
+            {
+                _baseRegistryHklm = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+                _baseRegistryHkcu = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
+            }
         }
 
         private RegistryKey Open(string subkey, bool isHklm, Func<string,RegistryKey> providerOpen, Func<string,RegistryKey> providerCreate)
@@ -41,21 +53,18 @@ namespace mySampleWiXSetupCA
 
         public RegistryKey OpenOrCreateHklmKey(string subKey)
         {
-            RegistryKey hklmBase = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            return Open( subKey, true, str => hklmBase.OpenSubKey(str, true),str => hklmBase.CreateSubKey(str));
+            return Open(subKey, true, str => _baseRegistryHklm.OpenSubKey(str, true), str => _baseRegistryHklm.CreateSubKey(str));
         }
 
         public RegistryKey OpenOrCreateHkcuKey(string subKey)
         {
-            RegistryKey hkcuBase = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
-            return Open( subKey, false, str => hkcuBase.OpenSubKey(str, true), str => hkcuBase.CreateSubKey(str));
+            return Open(subKey, false, str => _baseRegistryHkcu.OpenSubKey(str, true), str => _baseRegistryHkcu.CreateSubKey(str));
         }
 
         public void DeleteHkcuKey(string subKey)
         {
-            RegistryKey hkcuBase = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32);
             _session.Log("Start the delevetion of  HKCU sub key " + subKey);
-            hkcuBase.DeleteSubKey(subKey);
+            _baseRegistryHkcu.DeleteSubKey(subKey);
         }
     }
 }
