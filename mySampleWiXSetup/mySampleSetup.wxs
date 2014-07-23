@@ -122,11 +122,11 @@
      <!--Install Sequence--> 
     <InstallExecuteSequence>
       <!--INSTALL (+ Repair and Upgrade)-->
-      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE</Custom>
-      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE</Custom>
+      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
       
-      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed OR UPGRADINGCODE</Custom>
-      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
 
       <!--UNINSTALL-->
       <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
@@ -136,11 +136,11 @@
     </InstallExecuteSequence>
     <AdminExecuteSequence>
       <!--INSTALL (+ Repair and Upgrade)-->
-      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE</Custom>
-      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE</Custom>
+      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
 
-      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed OR UPGRADINGCODE</Custom>
-      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU.SetProperty" Before="Action_ActiveSetup_SetOpenHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetOpenHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
 
       <!--UNINSTALL-->
       <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
