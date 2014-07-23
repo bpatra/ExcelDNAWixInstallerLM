@@ -7,6 +7,12 @@ using Microsoft.Win32;
 
 namespace mySampleWiXSetupCA
 {
+    /// <summary>
+    /// Wraps registry action for logging.
+    /// </summary>
+    /// <remarks>
+    /// This may or may not write in the Wow6432 but actually we do not care....
+    /// </remarks>
     class RegistryAbstractor
     {
         private readonly Session _session;
@@ -43,6 +49,12 @@ namespace mySampleWiXSetupCA
         {
             return Open( subKey, false, str => Registry.CurrentUser.OpenSubKey(str, true),
                         str => Registry.CurrentUser.CreateSubKey(str));
+        }
+
+        public void DeleteHkcuKey(string subKey)
+        {
+            _session.Log("Start the delevetion of  HKCU sub key " + subKey);
+            Registry.CurrentUser.DeleteSubKey(subKey);
         }
     }
 }

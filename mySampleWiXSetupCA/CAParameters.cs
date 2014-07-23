@@ -18,54 +18,49 @@ namespace mySampleWiXSetupCA
         const string BasePathActiveSetup = @"SOFTWARE\Microsoft\Active Setup\Installed Components\";
 
         public string ProductName { get; private set; }
+
+        public string CompanyName { get; private set; }
+
         public string Version { get; private set; }
 
-        /**RELATIVE TO THE CREATION OF OPEN KEY***/
+        /// <summary>
+        /// Command that will be set in the StubPath on install or update or repair
+        /// </summary>
         public string CreateCommand { get; private set; }
-        private string CreateActiveSetupGuid { get; set; }
+
+        /// <summary>
+        /// Command that will be set in the StubPath on removal
+        /// </summary>
+        public string RemoveCommand { get; private set; }
+
+        private string ActiveSetupGuid { get; set; }
   
-        public String CreateRegistrySubKey
+        public String RegistrySubKey
         {
-            get { return BasePathActiveSetup + CreateActiveSetupGuid; }
+            get { return BasePathActiveSetup + ActiveSetupGuid; }
         }
 
-        public string DefaultCreate 
+        /// <summary>
+        /// This is what is written in the Default key (will be prompt to end user on install!)
+        /// </summary>
+        public string Default 
         {
-            get { return "Install" + ProductName; }
+            get { return string.Format("{0} by {1}", ProductName, CompanyName); }
         }
 
         public string CreateComponentId
         {
-            get { return ProductName + " ActiveSetup Create Open Key"; }
-        }
-
-        /**RELATIVE TO THE REMOVAL OF OPEN KEY***/
-        public string RemoveCommand { get; private set; }
-        private string RemoveActiveSetupGuid { get; set; }
-
-        public String RemoveRegistrySubKey
-        {
-            get { return BasePathActiveSetup + RemoveActiveSetupGuid; }
-        }
-
-        public string RemoveComponentId
-        {
-            get { return ProductName + " ActiveSetup Remove Open Key"; }
-        }
-
-        public string DefaultRemove
-        {
-            get { return "Uninstall" + ProductName; }
+            get { return string.Format("ActiveSetup for managing the HKCU OpenKey of {0} by {1}",ProductName, CompanyName); }
         }
 
         public static CaParameters ExtractFromSession(Session session)
         {
             const string createHkcuCommandKey = "CREATE_HKCU_OPEN_FULL";
-            const string createGuidKey = "ACTIVESETUP_CREATE_GUID";
+            const string createGuidKey = "ACTIVESETUP_GUID";
             const string productNameKey = "PRODUCTNAME";
+            const string companyNameKey = "COMPANYNAME";
             const string versionKey = "VERSION";
             const string removeHkcuCommand = "REMOVE_HKCU_OPEN_FULL";
-            const string removeGuidKey = "ACTIVESETUP_REMOVE_GUID";
 
             string productName = ExtractAndCheck(session, productNameKey);
             string version = ExtractAndCheck(session, versionKey);
@@ -74,16 +69,16 @@ namespace mySampleWiXSetupCA
             string createActiveSetupGuid = ExtractAndCheck(session, createGuidKey);
 
             string removeCommand = ExtractAndCheck(session, removeHkcuCommand);
-            string removeActiveSetupGuid = ExtractAndCheck(session, removeGuidKey);
+            string companyName = ExtractAndCheck(session, companyNameKey);
 
             var caParams = new CaParameters()
                 {
-                    CreateActiveSetupGuid = createActiveSetupGuid,
+                    ActiveSetupGuid = createActiveSetupGuid,
                     CreateCommand = createCommand,
                     ProductName = productName,
                     Version = version,
                     RemoveCommand = removeCommand,
-                    RemoveActiveSetupGuid = removeActiveSetupGuid
+                    CompanyName = companyName
                 };
 
             return caParams;

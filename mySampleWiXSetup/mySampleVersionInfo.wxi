@@ -13,8 +13,7 @@
   <?define PRODUCTGUID="4b860165-3f7e-4f7a-863b-e07bbf492dc9"?>
   <?define COMPONENTGROUP_PRGMFILES_GUID="{667290b6-f50e-45f4-9614-54d363f8b5c6}"?>
   <?define COMPONENTGROUP_ACTIVESETUP_GUID="{6bf47eef-4f2b-436d-a0b5-b5c1af4ff35d}"?>
-  <?define ACTIVESETUP_CREATE_GUID={7e537e3b-9708-4fc9-a945-97662b9609fb}?>
-  <?define ACTIVESETUP_REMOVE_GUID={077cddeb-adca-45b7-96fb-c902280a397d}?>
+  <?define ACTIVESETUP_GUID={7e537e3b-9708-4fc9-a945-97662b9609fb}?>
   
   <!--Set the name of your dlls here-->
   <?define XLL32="mysample-AddIn-packed.xll"?>
