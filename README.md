@@ -3,14 +3,14 @@ ExcelDNAWixInstallerLM
 
 ## A sample Wix installer "per machine" for Excel-DNA addins.
 
-The [Excel-DNA Wix installer][wixinstallerurl] sample found is per User which makes it not suitable for install at "company level". Then we have to perform a per Machine install. This cannot be done directly with HKLM because the OPEN key for .xll can be only in the HKCU registry. Therefore this install uses the ActiveSetup feature of Windows that propagates some install for all users of a given machine. The user who wants technical details can check [my blogpost on the subject][blogpost]
+The [Excel-DNA Wix installer][wixinstallerurl] sample found is per User which makes it not suitable for install at "company level". Then we have to perform a per Machine install. This cannot be done directly with HKLM because the OPEN key for .xll can be only in the HKCU registry. Therefore this install uses the ActiveSetup feature of Windows that propagates some install for all users of a given machine. The user who wants technical details can check [my blogpost on the subject][blogpost]. You may also be interested in [HKCU OPEN discussion][hkcustack] and [InstallMachine][permachineinstall] one.
 
 This project may also be interesting for people looking for a Wix installer that uses the ActiveSetup feature (there are some traps ahead...).
 
 ## What you should know before reusing this sample for your own project
 
 ###Configuration
-+ Then only configuration that you are supposed to do is on the *.wxi* file under the */mySampleWiXSetup* directory. Check the instruction there.
++ Then only configuration that you are supposed to do is on the *.wxi* file under the */mySampleWiXSetup* directory. Check the instruction [there][wxilink].
 
 + You MUST change the GUIDs there and replace by yours. To generate a GUID you may type [System.Guid]::NewGuid() in a Powershell Console.
 
@@ -36,4 +36,7 @@ One fact that may surprise: if a non admin tries to uninstall, then the OS will 
 
 [wixinstallerurl]: https://github.com/Excel-DNA/WiXInstaller "ExcelDNA Wix installer"
 [blogpost]: http://www.notwrittenyet.com "TODO: update"
+[wxilink]: https://github.com/bpatra/ExcelDNAWixInstallerLM/blob/master/mySampleWiXSetup/mySampleVersionInfo.wxi "The Wxi file you should imperatively modify"
+[hkcustack]: http://stackoverflow.com/questions/18602560/how-to-deploy-an-excel-xll-add-in-and-automatically-register-the-add-in-in-excel "A discussion on HKCU OPEN keys"
+[permachineinstall]: https://exceldna.codeplex.com/discussions/550941 "Discussion on per machine install"
 
