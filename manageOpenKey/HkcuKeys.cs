@@ -8,36 +8,48 @@ using Microsoft.Win32;
 
 namespace manageOpenKey
 {
-    static class HkcuKeys
+    class HkcuKeys
     {
+        private readonly IWriter _writer;
+        public HkcuKeys(IWriter writer)
+        {
+            _writer = writer;
+        }
+
         public const string SzBaseAddInKey = @"Software\Microsoft\Office\";
 
-        public static void CreateOpenHkcuKey(Parameters parameters)
+        public void CreateOpenHkcuKey(Parameters parameters)
         {
             if (parameters.SupportedOfficeVersion.Count == 0)
             {
                 throw new ApplicationException("There should be at least one office version supported");
             }
+            var registryAdapator = new RegistryAbstractor(_writer);
 
             foreach (string szOfficeVersionKey in parameters.SupportedOfficeVersion)
             {
                 double nVersion = double.Parse(szOfficeVersionKey, NumberStyles.Any, CultureInfo.InvariantCulture);
 
-                Console.WriteLine("Retrieving Registry Information for : " + SzBaseAddInKey + szOfficeVersionKey);
+                _writer.WriteLine("Retrieving Registry Information for : " + SzBaseAddInKey + szOfficeVersionKey);
 
                 // get the OPEN keys from the Software\Microsoft\Office\[Version]\Excel\Options key, skip if office version not found.
-                if (Registry.CurrentUser.OpenSubKey(SzBaseAddInKey + szOfficeVersionKey, false) != null)
+                string excelBaseKey = SzBaseAddInKey + szOfficeVersionKey + "Excel";
+                    //Software\Microsoft\Office\[Version]\Excel
+                if (Registry.LocalMachine.OpenSubKey(excelBaseKey, false) != null)//this version is install on the Machine
                 {
-                    string szKeyName = SzBaseAddInKey + szOfficeVersionKey + @"\Excel\Options";
+                    string excelOptionKey = SzBaseAddInKey + szOfficeVersionKey + @"\Options";
 
-                    string szXllToRegister = GetAddInName(parameters.XllName, parameters.Xll64Name, szOfficeVersionKey, nVersion);
-                    //for a localmachine install the xll's should be in the installFolder
-                    string fullPathToXll = Path.Combine(parameters.InstallDirectory, szXllToRegister);
-
-                    RegistryKey rkExcelXll = Registry.CurrentUser.OpenSubKey(szKeyName, true);
-                    if (rkExcelXll != null)
+                    //It is very important to Open or Create see https://github.com/bpatra/ExcelDNAWixInstallerLM/issues/9
+                    using (RegistryKey rkExcelXll = registryAdapator.OpenOrCreateHkcuKey(excelOptionKey))
                     {
-                        Console.WriteLine("Success finding HKCU key for : " + szKeyName);
+                        string szXllToRegister = GetAddInName(parameters.XllName, parameters.Xll64Name, szOfficeVersionKey,
+                                                        nVersion);
+                        //for a localmachine install the xll's should be in the installFolder
+                        string fullPathToXll = Path.Combine(parameters.InstallDirectory, szXllToRegister);
+
+
+
+                        _writer.WriteLine("Success finding HKCU key for : " + excelOptionKey);
                         string[] szValueNames = rkExcelXll.GetValueNames();
                         bool bIsOpen = false;
                         int nMaxOpen = -1;
@@ -45,12 +57,11 @@ namespace manageOpenKey
                         // check every value for OPEN keys
                         foreach (string szValueName in szValueNames)
                         {
+                            _writer.WriteLine(string.Format("Examining value {0}", szValueName));
                             // if there are already OPEN keys, determine if our key is installed
                             if (szValueName.StartsWith("OPEN"))
                             {
-                                int nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion)
-                                                        ? nOpenVersion
-                                                        : 0;
+                                int nOpenVersion = int.TryParse(szValueName.Substring(4), out nOpenVersion) ? nOpenVersion : 0;
                                 int nNewOpen = szValueName == "OPEN" ? 0 : nOpenVersion;
                                 if (nNewOpen > nMaxOpen)
                                 {
@@ -63,42 +74,44 @@ namespace manageOpenKey
                                 if (rkExcelXll.GetValue(szValueName).ToString().Contains(szXllToRegister))
                                 {
                                     bIsOpen = true;
+                                    _writer.WriteLine("Already found the OPEN key " + excelOptionKey);
                                 }
                             }
                         }
 
+
                         // if adding a new key
                         if (!bIsOpen)
                         {
+                            string value = "/R \"" + fullPathToXll + "\"";
+                            string keyToUse;
                             if (nMaxOpen == -1)
                             {
-                                rkExcelXll.SetValue("OPEN", "/R \"" + fullPathToXll + "\"");
+                                keyToUse = "OPEN";
                             }
                             else
                             {
-                                rkExcelXll.SetValue("OPEN" + (nMaxOpen + 1).ToString(CultureInfo.InvariantCulture), "/R \"" + fullPathToXll + "\"");
+                                keyToUse = "OPEN" + (nMaxOpen + 1).ToString(CultureInfo.InvariantCulture);
+
                             }
-                            rkExcelXll.Close();
+                            rkExcelXll.SetValue(keyToUse, value);
+                            _writer.WriteLine("Set {0} key with {1} value", keyToUse, value);
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unable to retrieve key for : " + szKeyName);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Unable to retrieve registry Information for : " + SzBaseAddInKey + szOfficeVersionKey);
+                    _writer.WriteLine("Unable to retrieve HKLM key for: " + excelBaseKey);
                 }
             }
 
-            Console.WriteLine("End CreateOpenHKCUKey");
+            _writer.WriteLine("End CreateOpenHKCUKey");
         }
 
 
-        public static void RemoveHkcuOpenKey(Parameters parameters)
+        public void RemoveHkcuOpenKey(Parameters parameters)
         {
-            Console.WriteLine("Begin RemoveHKCUOpenKey");
+            _writer.WriteLine("Begin RemoveHKCUOpenKey");
 
             if (parameters.SupportedOfficeVersion.Count == 0)
             {
@@ -133,9 +146,9 @@ namespace manageOpenKey
                     }
                 }
             }
-                
 
-            Console.WriteLine("End RemoveHKCUOpenKey");
+
+            _writer.WriteLine("End RemoveHKCUOpenKey");
         }
 
         //Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
