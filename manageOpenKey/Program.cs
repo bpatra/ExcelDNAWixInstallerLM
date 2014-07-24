@@ -13,32 +13,37 @@ namespace manageOpenKey
     {
         static int Main(string[] args)
         {
-            try
+            using (IWriter writer = new ConsoleWriter())
             {
-                Console.WriteLine("Start extracting args: " + string.Join(";", args));
-                var parameters = Parameters.ExtractFromArgs(args);
-
-                switch (parameters.Command)
+                var keyManager = new HkcuKeys(writer);
+                try
                 {
-                    case Command.Install:
-                        HkcuKeys.CreateOpenHkcuKey(parameters);
-                        break;
-                    case Command.Uninstall:
-                        HkcuKeys.RemoveHkcuOpenKey(parameters);
-                        break;
-                    default:
-                        throw new NotSupportedException("unknown command");
+                    writer.WriteLine("Start extracting args: " + string.Join(";", args));
+                    var parameters = Parameters.ExtractFromArgs(args);
+
+                    switch (parameters.Command)
+                    {
+                        case Command.Install:
+                            keyManager.CreateOpenHkcuKey(parameters);
+                            break;
+                        case Command.Uninstall:
+                            keyManager.RemoveHkcuOpenKey(parameters);
+                            break;
+                        default:
+                            throw new NotSupportedException("unknown command");
+                    }
+                    writer.WriteLine("Command successfully executed!");
+                    return 0;
                 }
-                Console.WriteLine("Command successfully executed!");
-                return 0;
+                catch (Exception exception)
+                {
+                    writer.WriteLine("Error: " + exception.Message);
+                    return 1;
+                }
             }
-            catch (Exception exception)
-            {
-                Console.WriteLine("Error: "+ exception.Message);
-                return 1;
-            }    
+
         }
 
-      
+
     }
 }
