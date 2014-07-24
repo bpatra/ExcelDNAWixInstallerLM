@@ -13,35 +13,31 @@ namespace manageOpenKey
     {
         static int Main(string[] args)
         {
-            using (IWriter writer = new ConsoleWriter())
+            var keyManager = new HkcuKeysManager();
+            try
             {
-                var keyManager = new HkcuKeys(writer);
-                try
-                {
-                    writer.WriteLine("Start extracting args: " + string.Join(";", args));
-                    var parameters = Parameters.ExtractFromArgs(args);
+                Console.WriteLine("Start extracting args: " + string.Join(";", args));
+                var parameters = Parameters.ExtractFromArgs(args);
 
-                    switch (parameters.Command)
-                    {
-                        case Command.Install:
-                            keyManager.CreateOpenHkcuKey(parameters);
-                            break;
-                        case Command.Uninstall:
-                            keyManager.RemoveHkcuOpenKey(parameters);
-                            break;
-                        default:
-                            throw new NotSupportedException("unknown command");
-                    }
-                    writer.WriteLine("Command successfully executed!");
-                    return 0;
-                }
-                catch (Exception exception)
+                switch (parameters.Command)
                 {
-                    writer.WriteLine("Error: " + exception.Message);
-                    return 1;
+                    case Command.Install:
+                        keyManager.CreateOpenHkcuKey(parameters);
+                        break;
+                    case Command.Uninstall:
+                        keyManager.RemoveHkcuOpenKey(parameters);
+                        break;
+                    default:
+                        throw new NotSupportedException("unknown command");
                 }
+                Console.WriteLine("Command successfully executed!");
+                return 0;
             }
-
+            catch (Exception exception)
+            {
+                Console.WriteLine("Error: " + exception.Message);
+                return 1;
+            }
         }
 
 

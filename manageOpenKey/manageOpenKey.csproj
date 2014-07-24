@@ -43,9 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleWriter.cs" />
-    <Compile Include="HkcuKeys.cs" />
-    <Compile Include="IWriter.cs" />
+    <Compile Include="HkcuKeysManager.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
