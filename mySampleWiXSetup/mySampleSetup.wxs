@@ -167,11 +167,11 @@
       <!--Component for the active setup-->
       <!--this permanent because we need to keep that after install-->
       <Component  Id="_CmpId_ActiveSetup" Directory="INSTALLFOLDER"  Guid="$(var.COMPONENTGROUP_ACTIVESETUP_GUID)" Permanent="yes">
-        <!--remove previous .exe and README.txt if found, does not fail if not present...-->
-        <RemoveFile Id="_FileId_manageOpenKeyExe_Remove" On ="install" Name="$(var.manageOpenKeyExeName)"/>
-        <RemoveFile Id="_FileId_manageOpenKeyREADME_Remove" On ="install" Name="$(var.manageOpenKeyREADMEName)"/>
+      <!--remove previous .exe and README.txt if found, does not fail if not present...-->
+      <RemoveFile Id="_FileId_manageOpenKeyExe_Remove" On ="install" Name="$(var.manageOpenKeyExeName)"/>
+      <RemoveFile Id="_FileId_manageOpenKeyREADME_Remove" On ="install" Name="$(var.manageOpenKeyREADMEName)"/>
       
-        <File Id="_FileId_manageOpenKeyExe" Source="$(var.manageOpenKeyDir)$(var.manageOpenKeyExeName)" />
+      <File Id="_FileId_manageOpenKeyExe" Source="$(var.manageOpenKeyDir)$(var.manageOpenKeyExeName)" />
       <File Id="_FileId_manageOpenKeyREADME" Source="$(var.manageOpenKeyDir)$(var.manageOpenKeyREADMEName)" />
       </Component>
     </ComponentGroup>
