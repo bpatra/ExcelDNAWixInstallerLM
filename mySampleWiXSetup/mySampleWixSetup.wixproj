@@ -6,11 +6,12 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>{1675bdaa-fba7-4dfd-9108-2f8fc154efd1}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>mySampleExcelSetup.win32</OutputName>
+    <OutputName>mySampleExcelSetup</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <SignOutput>true</SignOutput>
+    <Name>mySampleWixSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>

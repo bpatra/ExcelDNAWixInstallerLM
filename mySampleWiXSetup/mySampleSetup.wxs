@@ -22,21 +22,12 @@
     <Property Id="INSTALLFOLDER" Secure="yes" />
 
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <?if $(var.ProcessorArchitecture) = x86 ?>
       <Directory Id="ProgramFilesFolder">
         <Directory Id="ManufacturerFolder" Name="$(var.COMPANY_NAME)">
           <Directory Id="INSTALLFOLDER" Name="$(var.PRODUCT_NAME)">
           </Directory>
         </Directory>
       </Directory>
-      <?elseif $(var.ProcessorArchitecture) = x64 ?>
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="ManufacturerFolder" Name="$(var.COMPANY_NAME)">
-          <Directory Id="INSTALLFOLDER" Name="$(var.PRODUCT_NAME)">
-          </Directory>
-        </Directory>
-      </Directory>
-      <?endif?>
     </Directory>
 
     <!-- UI information-->
@@ -59,7 +50,6 @@
       Secure=yes must be used to fixed the issue as describe here: http://www.installsite.org/pages/en/msi/articles/VistaMSI/
     -->
 
-
     <PropertyRef Id="NETFRAMEWORK40FULL" />
     <Condition Message="This setup requires the .NET Framework 4.0 to be installed.">
       <![CDATA[Installed OR NETFRAMEWORK40FULL]]>
@@ -68,30 +58,19 @@
     <!-- Detect if at least one office excel has been found, to this aim use installation PATH -->
     <!--EXCELSUPPORTEDVERSION-->
        <Property Id="EXCEL2007INSTALLPATH" Secure="yes">
-      <?if $(var.ProcessorArchitecture) = x64 ?>
       <RegistrySearch Id="OfficeExcel2007InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\12.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
-      <?endif?>
       <RegistrySearch Id="OfficeExcel2007InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\12.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
     <Property Id="EXCEL2010INSTALLPATH" Secure="yes">
-      <?if $(var.ProcessorArchitecture) = x64 ?>
       <RegistrySearch Id="OfficeExcel2010InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
-      <?endif?>
       <RegistrySearch Id="OfficeExcel2010InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\14.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
     <Property Id="EXCEL2013INSTALLPATH" Secure="yes">
-      <?if $(var.ProcessorArchitecture) = x64 ?>
       <RegistrySearch Id="OfficeExcel2013InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
-      <?endif?>
       <RegistrySearch Id="OfficeExcel2013InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
     
-    <?if $(var.ProcessorArchitecture) = x86 ?>
-    <?define OfficeExcelNotFoundMessage=This setup requires Office Excel 2007, 2010 and/or 2013 (32-bit). ?>
-    <?elseif $(var.ProcessorArchitecture) = x64 ?>
-    <?define OfficeExcelNotFoundMessage=This setup requires Office Excel 2007, 2010 and/or 2013 (32-bit or 64-bit). ?>
-    <?endif?>
-    <Condition Message="$(var.OfficeExcelNotFoundMessage)">
+    <Condition Message="This setup requires Office Excel 2007 and/or 2010 and/or 2013 (32-bit or 64-bit).">
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
     </Condition>
 
@@ -176,9 +155,7 @@
       <!-- Files to copy in Program Files-->
       <Component Id="_CmpId_ProgramFiles" Directory="INSTALLFOLDER" Guid="$(var.COMPONENTGROUP_PRGMFILES_GUID)">
         <File Id="_FileId_Addin32" Source="$(var.XLLFULLPATH32)" />
-        <?if $(var.ProcessorArchitecture) = x64 ?>
         <File Id="_FileId_Addin64" Source="$(var.XLLFULLPATH64)" />
-        <?endif?>
         
         <RegistryKey Root='HKLM' Key='Software\[Manufacturer]\[ProductName]' >
           <RegistryValue Action='write' Name='InstallPath' Type='string' Value='[INSTALLFOLDER]' />
