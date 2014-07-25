@@ -34,7 +34,7 @@ One fact that may surprise: if a non admin tries to uninstall, then the OS will 
 Citrix support is not adressed here but we believe this can be handled: using alternate shells (see more info [here][activesetupexplained]) 
 
 [wixinstallerurl]: https://github.com/Excel-DNA/WiXInstaller "ExcelDNA Wix installer"
-[blogpost]: http://www.notwrittenyet.com "TODO: update"
+[blogpost]: http://benoitpatra.com/2014/07/26/a-sample-wix-installer-using-the-activesetup-feature/ "Active Setup blog post"
 [wxilink]: https://github.com/bpatra/ExcelDNAWixInstallerLM/blob/master/mySampleWiXSetup/mySampleVersionInfo.wxi "The Wxi file you should imperatively modify"
 [hkcustack]: http://stackoverflow.com/questions/18602560/how-to-deploy-an-excel-xll-add-in-and-automatically-register-the-add-in-in-excel "A discussion on HKCU OPEN keys"
 [permachineinstall]: https://exceldna.codeplex.com/discussions/550941 "Discussion on per machine install"
