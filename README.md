@@ -27,10 +27,6 @@ This project may also be interesting for people looking for a Wix installer that
 ###Limitations
 + There is only one limitation known for now and its in the uninstall. The uninstall does not wipe completly the *[INSTALLFOLDER] typically (%SystemDrive%/Program Files(x86)/YourCompany/YourProduct)*. Indeed, we have to leave the *manageOpenKey.exe* which is also responsible for cleaning the environmment for *all* users.
 
-+ The cleaning process mentioned above will appear, for all users except the admin user who has performed the uninstall, as a pop-up launched at logon: *"<Your product>" by "<Your Company>" has been removed from this computer. Do you want to clean up your personalized settings for this program?* (see the popup screenshot below, remark that the *This is an example* will be replaced by  *"<Your product>" by "<Your Company>"*)
-. User, will have to click Yes (if not it will ask at each logon).
-![alt text](https://cloud.githubusercontent.com/assets/2801702/3671277/f998e5ba-124d-11e4-9382-c38e869401e7.jpg "Pop up Uninstalled ActiveSetup")
-
 ###Others
 One fact that may surprise: if a non admin tries to uninstall, then the OS will ask to execute throught administrator privileges (then another user). If he does so then, the addin will not be properly uninstalled for the non admin user. He will have to relog so that the uninstall process per user triggered by ActiveSetup is executed (and the OPEN key will be removed).
 

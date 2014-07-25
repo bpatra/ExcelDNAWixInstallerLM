@@ -126,6 +126,7 @@ namespace mySampleWiXSetupCA
             //http://www.sepago.de/e/helge/2010/04/22/active-setup-explained
             hklmKey.SetValue("Version",version.Replace('.',','),RegistryValueKind.String); 
             hklmKey.SetValue("IsInstalled", isInstalled ? 1 : 0 ,RegistryValueKind.DWord);
+            hklmKey.SetValue("Dontask",2);
         }
 
         //Only the version is required... for hkcu installed component of active setup
