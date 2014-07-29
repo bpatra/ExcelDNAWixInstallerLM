@@ -109,45 +109,45 @@
      <!--Install Sequence--> 
     <InstallExecuteSequence>
       <!--INSTALL (+ Repair and Upgrade)-->
-      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
       
-      <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
 
-      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
 
       <!--UNINSTALL-->
-      <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed</Custom>
+      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed</Custom>
       
-      <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed</Custom>
 
-      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>     
+      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed</Custom>     
     </InstallExecuteSequence>
     <AdminExecuteSequence>
       <!--INSTALL (+ Repair and Upgrade)-->
-      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU_Cmd" Before="Action_SetOPENHKCU">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_SetOPENHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
 
-      <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKLM.SetProperty" Before="Action_ActiveSetup_SetHKLM">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKLM" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
 
-      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
-      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU.SetProperty" Before="Action_ActiveSetup_SetHKCU">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
+      <Custom Action="Action_ActiveSetup_SetHKCU" Before="InstallFinalize">NOT Installed OR UPGRADINGPRODUCTCODE OR REINSTALL</Custom>
 
       <!--UNINSTALL-->
-      <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_RemoveOPENHKCU_Cmd" Before="Action_RemoveOPENHKCU">Installed</Custom>
+      <Custom Action="Action_RemoveOPENHKCU" Before="InstallFinalize">Installed</Custom>
 
-      <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKLM.SetProperty" Before="Action_ActiveSetup_RemoveHKLM">Installed</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKLM" Before="InstallFinalize">Installed</Custom>
 
-      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
-      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKCU.SetProperty" Before="Action_ActiveSetup_RemoveHKCU">Installed</Custom>
+      <Custom Action="Action_ActiveSetup_RemoveHKCU" Before="InstallFinalize">Installed</Custom>
     </AdminExecuteSequence>
 
     <!-- Create our keys in the Registry -->
