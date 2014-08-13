@@ -31,7 +31,7 @@ namespace manageOpenKey
                 // get the OPEN keys from the Software\Microsoft\Office\[Version]\Excel\Options key, skip if office version not found.
                 string excelBaseKey = SzBaseAddInKey + szOfficeVersionKey + @"\Excel";
                     //Software\Microsoft\Office\[Version]\Excel
-                if (Registry.LocalMachine.OpenSubKey(excelBaseKey, false) != null)//this version is install on the Machine, so we have to consider it for the HKCU
+                if (IsOfficeExcelInstalled(excelBaseKey))//this version is install on the Machine, so we have to consider it for the HKCU
                 {
                     if (!foundOffice) foundOffice = true;
 
@@ -195,6 +195,14 @@ namespace manageOpenKey
             }
 
             return szXllToRegister;
+        }
+
+        private static bool IsOfficeExcelInstalled(string excelBaseKey)
+        {
+            var hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            var hklm64 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+
+            return (hklm32.OpenSubKey(excelBaseKey, false) != null || hklm64.OpenSubKey(excelBaseKey, false) != null);
         }
     }
 }
