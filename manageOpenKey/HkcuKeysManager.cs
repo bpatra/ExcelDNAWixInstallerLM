@@ -30,7 +30,7 @@ namespace manageOpenKey
 
                 // get the OPEN keys from the Software\Microsoft\Office\[Version]\Excel\Options key, skip if office version not found.
                 string excelBaseKey = SzBaseAddInKey + szOfficeVersionKey + @"\Excel";
-                    //Software\Microsoft\Office\[Version]\Excel
+                //Software\Microsoft\Office\[Version]\Excel
                 if (IsOfficeExcelInstalled(excelBaseKey))//this version is install on the Machine, so we have to consider it for the HKCU
                 {
                     if (!foundOffice) foundOffice = true;
@@ -97,7 +97,7 @@ namespace manageOpenKey
                 }
                 else
                 {
-                    Console.WriteLine("Unable to retrieve HKLM key for: " + excelBaseKey);
+                    Console.WriteLine("Unable to retrieve HKLM key for: " + excelBaseKey + ". This version of Office might not be installed.");
                 }
             }
 
@@ -145,56 +145,103 @@ namespace manageOpenKey
                         }
                         else
                         {
-                            Console.WriteLine("...key not found.");
+                            Console.WriteLine("... key not found.");
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("... key does not exists. ");
+                    Console.WriteLine("... key does not exists.");
                 }
             }
-
 
             Console.WriteLine("End RemoveHKCUOpenKey");
         }
 
-        //Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
-        //http://stackoverflow.com/questions/2203980/detect-whether-office-2010-is-32bit-or-64bit-via-the-registry
         private static string GetAddInName(string szXll32Name, string szXll64Name, string szOfficeVersionKey, double nVersion)
         {
-            string szXllToRegister = string.Empty;
-
-            if (nVersion >= 14)
+            Console.WriteLine("Detect office bitness using office version {0}", nVersion);
+            var officeBitness = GetOfficeBitness(szOfficeVersionKey, nVersion);
+            switch (officeBitness)
             {
-                // determine if office is 32-bit or 64-bit
-                RegistryKey rkBitness = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
-                if (rkBitness != null)
+                case OfficeBitness.X86:
+                    Console.WriteLine("... 32 bits.");
+                    return szXll32Name;
+
+                case OfficeBitness.X64:
+                    Console.WriteLine("... 64 bits.");
+                    return szXll64Name;
+
+                default:
+                    throw new InvalidOperationException("Cannot detect office bitness for version " + nVersion);
+            }
+        }
+
+
+        private enum OfficeBitness
+        {
+            Unknown,
+            X86,
+            X64
+        }
+
+        private static OfficeBitness GetOfficeBitness(string szOfficeVersionKey, double nVersion)
+        {
+            if (nVersion < 14) // before office 2010, no 64 bits version of office exists. 
+            {
+                return OfficeBitness.X86;
+            }
+
+            // Check the ClickToRun registry (x86+x64). Both must be checked.
+            // http://msdn.microsoft.com/en-us/library/office/ff864733(v=office.15).aspx
+            RegistryKey clickToRunRegKey86 = RegistryKey
+                .OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                .OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\ClickToRun\Configuration", false);
+            Console.WriteLine("Office bitness using clicktorun x86 office installation: {0}present", clickToRunRegKey86 == null ? "not " : "");
+            RegistryKey clickToRunRegKey64 = RegistryKey
+                .OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
+                .OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\ClickToRun\Configuration", false);
+            Console.WriteLine("Office bitness using clicktorun x64 office installation: {0}present", clickToRunRegKey64 == null ? "not " : "");
+
+            // Check the Outlook\Bitness registry key
+            // Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
+            // http://stackoverflow.com/questions/2203980/detect-whether-office-2010-is-32bit-or-64bit-via-the-registry
+            RegistryKey outlookRegKey = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+            Console.WriteLine("Office bitness using std office installation: {0}present", outlookRegKey == null ? "not " : "");
+
+
+            // First check clicktorun (skip if not defined), new deployment tool from microsoft
+            var bitnessRegKey = clickToRunRegKey86 ?? clickToRunRegKey64;
+            if (bitnessRegKey != null)
+            {
+                switch ((bitnessRegKey.GetValue("Platform") ?? "").ToString())
                 {
-                    object oBitValue = rkBitness.GetValue("Bitness");
-                    if (oBitValue != null)
+                    case "x64":
+                        return OfficeBitness.X64;
+                    case "x86":
+                        return OfficeBitness.X86;
+                }
+            }
+            
+            // Then check outlook bitness registry key
+            if (outlookRegKey != null)
+            {
+                object oBitValue = outlookRegKey.GetValue("Bitness");
+                if (oBitValue != null)
+                {
+                    switch (oBitValue.ToString())
                     {
-                        if (oBitValue.ToString() == "x64")
-                        {
-                            szXllToRegister = szXll64Name;
-                        }
-                        else
-                        {
-                            szXllToRegister = szXll32Name;
-                        }
-                    }
-                    else
-                    {
-                        szXllToRegister = szXll32Name;
+                        case "x64":
+                            return OfficeBitness.X64;
+                        case "": // Empty key means x86 for older install of office.
+                        case "x86":
+                            return OfficeBitness.X86;
                     }
                 }
             }
-            else //excel 2003, there was no 64bits
-            {
-                szXllToRegister = szXll32Name;
-            }
 
-            return szXllToRegister;
+            // If not found, then unknown
+            return OfficeBitness.Unknown;
         }
 
         private static bool IsOfficeExcelInstalled(string excelBaseKey)
