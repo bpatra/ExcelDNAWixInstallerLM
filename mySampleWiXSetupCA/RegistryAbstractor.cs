@@ -63,8 +63,8 @@ namespace mySampleWiXSetupCA
 
         public void DeleteHkcuKey(string subKey)
         {
-            _session.Log("Start the delevetion of  HKCU sub key " + subKey);
-            _baseRegistryHkcu.DeleteSubKey(subKey);
+            _session.Log("Start the deletion of HKCU sub key " + subKey);
+            _baseRegistryHkcu.DeleteSubKey(subKey, false);
         }
     }
 }
