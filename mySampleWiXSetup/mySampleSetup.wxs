@@ -69,14 +69,18 @@
       <RegistrySearch Id="OfficeExcel2013InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
       <RegistrySearch Id="OfficeExcel2013InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\15.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
+    <Property Id="EXCEL2016INSTALLPATH" Secure="yes">
+      <RegistrySearch Id="OfficeExcel2016InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\16.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
+      <RegistrySearch Id="OfficeExcel2016InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\16.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
+    </Property>
     
-    <Condition Message="This setup requires Office Excel 2007 and/or 2010 and/or 2013 (32-bit or 64-bit).">
-      <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH]]>
+    <Condition Message="This setup requires Office Excel 2007 and/or 2010 and/or 2013 and/or 2016 (32-bit or 64-bit).">
+      <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH OR EXCEL2016INSTALLPATH]]>
     </Condition>
 
     <!--command arguments to pass to .exe-->
-    <Property Id="CREATE_HKCU_OPEN_CMD" Value="/install $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
-    <Property Id="REMOVE_HKCU_OPEN_CMD" Value="/uninstall $(var.XLL32) $(var.XLL64) $(var.OFFICEREGKEYS)" />
+    <Property Id="CREATE_HKCU_OPEN_CMD" Value='/install "$(var.XLL32)" "$(var.XLL64)" $(var.OFFICEREGKEYS)' />
+    <Property Id="REMOVE_HKCU_OPEN_CMD" Value='/uninstall "$(var.XLL32)" "$(var.XLL64)" $(var.OFFICEREGKEYS)' />
     
     <!-- Custom Actions -->
     <Binary Id="_BinID_CustomAction" SourceFile="$(var.CADLLFULLPATH)" />
