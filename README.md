@@ -31,7 +31,8 @@ This project may also be interesting for people looking for a Wix installer that
 One fact that may surprise: if a non admin tries to uninstall, then the OS will ask to execute throught administrator privileges (then another user). If he does so then, the addin will not be properly uninstalled for the non admin user. He will have to relog so that the uninstall process per user triggered by ActiveSetup is executed (and the OPEN key will be removed).
 
 ###Citrix support
-Citrix support is not adressed here but we believe this can be handled: using alternate shells (see more info [here][activesetupexplained]) 
+Create a new logon script that triggers the ActiveSetup with this command
+%SystemRoot%\system32\runonce.exe /AlternateShellStartup
 
 [wixinstallerurl]: https://github.com/Excel-DNA/WiXInstaller "ExcelDNA Wix installer"
 [blogpost]: http://benoitpatra.com/2014/07/26/a-sample-wix-installer-using-the-activesetup-feature/ "Active Setup blog post"
