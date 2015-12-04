@@ -73,6 +73,14 @@
       <RegistrySearch Id="OfficeExcel2016InstallPath64" Root="HKLM" Key="SOFTWARE\Microsoft\Office\16.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="yes" />
       <RegistrySearch Id="OfficeExcel2016InstallPath32" Root="HKLM" Key="SOFTWARE\Microsoft\Office\16.0\Excel\InstallRoot" Name="Path" Type="raw" Win64="no" />
     </Property>
+	
+	<!--
+      it would be better to check if excel is trully installed (similar to what is done in manageOpenKey IsOfficeExcelInstalled)
+      it could be easily done using DirectorySearch + FileSearch BUT it cause issues with office 365 clickonce install which use 64bit program file to install 32 bits programs.
+      cause: msi engine rename "Program Files" to "Program Files (x86)" to any registry key read when using a 32bits msi, resulting in excel not found.
+      
+      todo: might be possible to do it using a custom action (would also be easier to maintain).
+    -->
     
     <Condition Message="This setup requires Office Excel 2007 and/or 2010 and/or 2013 and/or 2016 (32-bit or 64-bit).">
       <![CDATA[Installed OR EXCEL2007INSTALLPATH OR EXCEL2010INSTALLPATH OR EXCEL2013INSTALLPATH OR EXCEL2016INSTALLPATH]]>

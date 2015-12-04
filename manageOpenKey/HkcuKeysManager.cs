@@ -12,6 +12,9 @@ namespace manageOpenKey
     {
         public const string SzBaseAddInKey = @"Software\Microsoft\Office\";
 
+        private const string ExcelApplicationName = "excel.exe";
+
+
         public void CreateOpenHkcuKey(Parameters parameters)
         {
             if (parameters.SupportedOfficeVersion.Count == 0)
@@ -97,15 +100,16 @@ namespace manageOpenKey
                 }
                 else
                 {
-                    Console.WriteLine("Unable to retrieve HKLM key for: " + excelBaseKey + ". This version of Office might not be installed.");
+                    Console.WriteLine(
+                        "Unable to retrieve Office information in HKLM key: {0}. This version of Office might not be installed.",
+                        excelBaseKey);
                 }
             }
 
-            if(!foundOffice) throw new ApplicationException("No Excel found in HKLM");
+            if (!foundOffice) throw new ApplicationException("No Excel found in HKLM");
 
             Console.WriteLine("End CreateOpenHKCUKey");
         }
-
 
         public void RemoveHkcuOpenKey(Parameters parameters)
         {
@@ -203,11 +207,27 @@ namespace manageOpenKey
                 .OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\ClickToRun\Configuration", false);
             Console.WriteLine("Office bitness using clicktorun x64 office installation: {0}present", clickToRunRegKey64 == null ? "not " : "");
 
+
             // Check the Outlook\Bitness registry key
             // Using a registry key of outlook to determine the bitness of office may look like weird but that's the reality.
             // http://stackoverflow.com/questions/2203980/detect-whether-office-2010-is-32bit-or-64bit-via-the-registry
-            RegistryKey outlookRegKey = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
-            Console.WriteLine("Office bitness using std office installation: {0}present", outlookRegKey == null ? "not " : "");
+
+            // Note about upgrading office with "keep previous version" option:
+            // Only one version of Outlook can be installed at a time. However, we can have several excel, word, etc versions at the same time.
+            // One of the Outlook registry key is removed when upgrading Office. Thus the bitness is not found, resulting in the setup to fail.
+            // Checking both x86/64 keys for office bitness seems to do the job.
+
+            // Another alternative might be to check the bitness of any version of Office. It seems that you can't install 32bits and 64bits version
+            // of office side-by-side (https://msdn.microsoft.com/en-us/library/ee691831.aspx#Anchor_6, https://technet.microsoft.com/en-us/library/ee681792.aspx)
+
+            RegistryKey outlookRegKey86 =
+                RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                    .OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+            Console.WriteLine("Office bitness using std x86 office installation: {0}present", outlookRegKey86 == null ? "not " : "");
+            RegistryKey outlookRegKey64 =
+                RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
+                    .OpenSubKey(@"Software\Microsoft\Office\" + szOfficeVersionKey + @"\Outlook", false);
+            Console.WriteLine("Office bitness using std x64 office installation: {0}present", outlookRegKey64 == null ? "not " : "");
 
 
             // First check clicktorun (skip if not defined), new deployment tool from microsoft
@@ -224,7 +244,8 @@ namespace manageOpenKey
             }
             
             // Then check outlook bitness registry key
-            if (outlookRegKey != null)
+            var outlookRegKeys = new List<RegistryKey> { outlookRegKey86, outlookRegKey64 };
+            foreach (var outlookRegKey in outlookRegKeys.Where(x => x != null))
             {
                 object oBitValue = outlookRegKey.GetValue("Bitness");
                 if (oBitValue != null)
@@ -246,10 +267,49 @@ namespace manageOpenKey
 
         private static bool IsOfficeExcelInstalled(string excelBaseKey)
         {
-            var hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            var hklm64 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+            // Check both x86 and x64 registry
+            var hklmRoot = new List<RegistryKey>
+            {
+                RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64),
+                RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+            };
 
-            return (hklm32.OpenSubKey(excelBaseKey, false) != null || hklm64.OpenSubKey(excelBaseKey, false) != null);
+            /*
+             * Here, we check if excel is trully installed on the system by checking Office installation root + application name.
+             * HKLM\Software\Microsoft\Office\x.x\Excel\InstallRoot | Path
+             */
+
+            var excelInstallRootKey = excelBaseKey + @"\InstallRoot";
+            foreach (var root in hklmRoot)
+            {
+                var installRootKey = root.OpenSubKey(excelInstallRootKey, false);
+                if (installRootKey == null)
+                {
+                    continue;
+                }
+
+                var pathKey = installRootKey.GetValue("Path") as string;
+                if (string.IsNullOrEmpty(pathKey))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var excelApplicationPath = Path.Combine(pathKey, ExcelApplicationName);
+                    if (File.Exists(excelApplicationPath))
+                    {
+                        return true;
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    // if the registry key is corrupted (Path.Combine call), we don't want to throw. but log it just in case.
+                    Console.WriteLine("IsOfficeExcelInstalled failed due to invalid value in registry key {0}. Consider Microsoft Office Excel not installed for this version. Exception: {1}", excelInstallRootKey, ex);
+                }
+            }
+
+            return false;
         }
     }
 }

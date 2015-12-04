@@ -15,7 +15,7 @@ This project may also be interesting for people looking for a Wix installer that
 + You MUST change the GUIDs there and replace by yours. To generate a GUID you may type [System.Guid]::NewGuid() in a Powershell Console.
 
 ###Requirements for this sample
-+ In this sample we have set only the list of supported Office version to 12.0,14.0,15.0 (Office 2007, 2010 and 2014). But there should not be a big deal to support 2003 as well even we have tried.
++ In this sample we have set only the list of supported Office version to 12.0,14.0,15.0,16.0 (Office 2007, 2010 and 2013, 2016). But there should not be a big deal to support 2003 as well even we have tried. Office 365 is also supported.
 
 + In this install the Full .Net Framework 4.0 is required. However we believe that you can require .NET 4.0 Client Profile because many elements of the Microsoft.Win32 namespace used in this sample are present in .NET40 Client Profile. Support for .NET 3.5 will require to rewrite a good proportion of the .NET Registry APIs.
  
